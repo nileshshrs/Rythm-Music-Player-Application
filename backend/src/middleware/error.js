@@ -1,5 +1,6 @@
 import { AppError } from "../utils/AppError.js";
 import { INTERNAL_SERVER_ERROR } from "../utils/constants/http.js";
+import { clearAuthCookies, refresh_path } from "../utils/cookies.js";
 
 
 const handleAppError = (res, error) => {
@@ -10,6 +11,10 @@ const handleAppError = (res, error) => {
 };
 
 const error = (err, req, res, next) => {
+
+    if(req.path === refresh_path){
+        clearAuthCookies(res);
+    }
     
     if (err instanceof AppError) {
         return handleAppError(res, err);

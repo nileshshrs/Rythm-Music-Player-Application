@@ -1,6 +1,6 @@
 import { fifteenDaysFromNow, fifteenMinutesFromNow } from "./date.js";
 
-const refresh_path = "api/v1/auth/refresh"
+export const refresh_path = "/api/v1/auth/refresh"
 const defaults = {
     sameSite: "none",
     httpOnly: true,

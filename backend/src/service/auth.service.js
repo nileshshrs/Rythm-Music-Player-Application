@@ -1,8 +1,9 @@
-import sessionModel from "../models/session.model.js";
+import SessionModel from "../models/session.model.js";
 import userModel from "../models/users.model.js";
 import appAssert from "../utils/appAssert.js";
 import { CONFLICT, UNAUTHORIZED } from "../utils/constants/http.js";
-import { accessTokenSignOptions, refreshTokenSignOptions, signTokens } from "../utils/jwt.js";
+import { fifteenDaysFromNow, oneDayFromNow } from "../utils/date.js";
+import { accessTokenSignOptions, refreshTokenSignOptions, signTokens, verifyToken } from "../utils/jwt.js";
 
 export const createAccount = async (data) => {
   const existingUser = await userModel.exists({
@@ -20,7 +21,7 @@ export const createAccount = async (data) => {
     password: data.password,
   });
 
-  const session = await sessionModel.create({
+  const session = await SessionModel.create({
     userID: user._id,
     userAgent: data.userAgent,
   });
@@ -58,7 +59,7 @@ export const login = async ({ usernameOrEmail, password, userAgent }) => {
   appAssert(isValid, UNAUTHORIZED, "Invalid email or password");
   // create a session
   const userID = user._id;
-  const session = await sessionModel.create({
+  const session = await SessionModel.create({
     userID,
     userAgent,
   });
@@ -82,4 +83,41 @@ export const login = async ({ usernameOrEmail, password, userAgent }) => {
     accessToken,
     refreshToken,
   };
+}
+
+
+export const refreshUserAccessToken = async (refreshToken) => {
+  const { payload } = verifyToken(refreshToken)
+
+
+  appAssert(payload, UNAUTHORIZED, "invalid refresh token.")
+
+  const session = await SessionModel.findById(payload.sessionID)
+  const now = Date.now()
+  appAssert(session
+    && session.expiresAt.getTime() > now
+    , UNAUTHORIZED, "session has expired.")
+
+  // refresh session if it expires within next 24hrs
+
+  const sessionNeedsRefresh = session.expiresAt.getTime() - now <= oneDayFromNow;
+
+  if (sessionNeedsRefresh) {
+    session.expiresAt = fifteenDaysFromNow();
+    await session.save()
+  }
+  const newRefreshToken = sessionNeedsRefresh ? signTokens({
+    sessionID: session._id, refreshTokenSignOptions
+  }) : ""
+
+
+  const accessToken = signTokens({
+    userID: session.userID,
+    sessionID: session._id
+  })
+
+  return {
+    accessToken, newRefreshToken
+  }
+
 }
