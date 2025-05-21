@@ -8,6 +8,7 @@ import error from './middleware/error.js';
 import authRoutes from './routes/auth.route.js';
 import authenticate from './middleware/authenticate.js';
 import userRoutes from './routes/user.routes.js';
+import albumRoutes from './routes/album.routes.js';
 
 // Create the Express app
 const app = express();
@@ -25,7 +26,8 @@ app.use(cors({
 app.use(cookieParser());
 
 app.use("/api/v1/auth", authRoutes)
-app.use("/api/v1/user", authenticate, userRoutes) // Assuming you have user routes as well
+app.use("/api/v1/user", authenticate, userRoutes)
+app.use("/api/v1/album",  albumRoutes) // Ensure albumRoutes is imported correctly
 
 
 
