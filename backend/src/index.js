@@ -9,6 +9,7 @@ import authRoutes from './routes/auth.route.js';
 import authenticate from './middleware/authenticate.js';
 import userRoutes from './routes/user.routes.js';
 import albumRoutes from './routes/album.routes.js';
+import uploadRoutes from './routes/upload.routes.js';
 
 // Create the Express app
 const app = express();
@@ -28,6 +29,7 @@ app.use(cookieParser());
 app.use("/api/v1/auth", authRoutes)
 app.use("/api/v1/user", authenticate, userRoutes)
 app.use("/api/v1/album",  albumRoutes) // Ensure albumRoutes is imported correctly
+app.use("/api/v1/upload", uploadRoutes) // Ensure userRoutes is imported correctly
 
 
 
