@@ -1,6 +1,8 @@
 import AlbumModel from "../models/album.model.js";
+import SongModel from "../models/songs.model.js";
+import appAssert from "../utils/appAssert.js";
 import catchErrors from "../utils/catchErrors.js";
-import { CREATED, OK } from "../utils/constants/http.js";
+import { CREATED, NOT_FOUND, OK } from "../utils/constants/http.js";
 
 
 export const createAlbumController = catchErrors(
@@ -30,3 +32,20 @@ export const getAllAlbumsController = catchErrors(
         return res.status(OK).json(albums);
     }
 );
+
+export const getAlbumByIDController = catchErrors(
+    async (req, res) => {
+        const { id } = req.params;
+
+        const album = await AlbumModel.findById(id).lean();
+
+        appAssert(album, NOT_FOUND, "Album not found");
+
+        const songs = await SongModel.find({ album: id }).lean();
+
+        return res.status(OK).json({
+            album,
+            songs
+        });
+    }
+)

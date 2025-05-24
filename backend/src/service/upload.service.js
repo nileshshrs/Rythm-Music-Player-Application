@@ -12,3 +12,5 @@ export const uploadToCloudinary = (fileBuffer, folder, resourceType) => {
     uploadStream.end(fileBuffer);
   });
 };
+
+
