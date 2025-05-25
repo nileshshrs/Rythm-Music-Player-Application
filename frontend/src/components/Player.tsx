@@ -30,6 +30,7 @@ const Player = () => {
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const [currentTime, setCurrentTime] = useState(0);
   const [duration, setDuration] = useState(0);
+  const [volume, setVolume] = useState(100);
 
   const placeholderImage =
     "https://t4.ftcdn.net/jpg/08/12/88/67/240_F_812886725_TVmFx7y2k6vGUaRyrVJhJ4umZiQEnQ3A.jpg";
@@ -39,6 +40,12 @@ const Player = () => {
       setAudioRef(audioRef.current);
     }
   }, [setAudioRef]);
+
+  useEffect(() => {
+    if (audioRef.current) {
+      audioRef.current.volume = volume / 100;
+    }
+  }, [volume]);
 
   useEffect(() => {
     if (currentSong && audioRef.current) {
@@ -186,12 +193,26 @@ const Player = () => {
               <Button size="icon" className="text-zinc-400 hover:text-white bg-transparent">
                 <Volume1 className="h-4 w-4" />
               </Button>
-              <Slider
-                value={[100]}
-                max={100}
-                step={1}
-                className="w-full hover:cursor-grab active:cursor-grabbing"
-              />
+              <div className="relative w-full h-1 group">
+                <div className="w-full h-1 bg-zinc-600 rounded-full" />
+                <div
+                  className="absolute top-0 left-0 h-1 bg-[#1db954] rounded-full"
+                  style={{ width: `${volume}%` }}
+                />
+                <div
+                  className="absolute top-1/2 -translate-y-1/2 w-3 h-3 bg-white rounded-full opacity-0 group-hover:opacity-100 transition-opacity"
+                  style={{ left: `calc(${volume}% - 6px)` }}
+                />
+                <input
+                  type="range"
+                  min={0}
+                  max={100}
+                  value={volume}
+                  step={1}
+                  onChange={(e) => setVolume(Number(e.target.value))}
+                  className="absolute top-0 left-0 w-full h-1 opacity-0 cursor-pointer z-10"
+                />
+              </div>
             </div>
           </div>
         </div>
