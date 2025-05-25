@@ -6,13 +6,15 @@ import { Clock } from "lucide-react";
 import { useParams, Link } from "react-router-dom";
 import React from "react";
 import { Song } from "@/utils/types";
+import { useMusicContext } from "@/context/MusicContext";
 
 const Album = () => {
+  const { playSingle, playAlbum } = useMusicContext()
   const { id } = useParams();
   const { album, songs, isLoading } = useAlbum(id);
 
   return (
-    <div className="h-[80vh] overflow-hidden bg-gradient-to-b from-zinc-800 to-zinc-900 rounded-md">
+    <div className="h-[80.1vh] overflow-hidden bg-gradient-to-b from-zinc-800 to-zinc-900 rounded-md">
       <ScrollArea className="h-full overflow-y-auto rounded-md">
         <div className="relative min-h-full pb-40">
           {/* Background gradient overlay */}
@@ -55,6 +57,11 @@ const Album = () => {
             {/* Play Button */}
             <div className="px-6 pb-4 flex justify-center md:justify-start gap-6">
               <Button
+                onClick={() => {
+                  if (songs && songs.length > 0) {
+                    playAlbum(songs);
+                  }
+                }}
                 size="icon"
                 className="w-14 h-14 rounded-full bg-green-500 hover:bg-green-400 shadow-xl transition duration-200 transform hover:scale-105 flex items-center justify-center"
               >
