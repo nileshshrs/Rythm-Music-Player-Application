@@ -1,4 +1,6 @@
+import Activity from "@/components/Activity"
 import LeftSidebar from "@/components/LeftSidebar"
+import Topbar from "@/components/Topbar"
 import {
   ResizableHandle,
   ResizablePanel,
@@ -24,10 +26,12 @@ const Layout = () => {
         <ResizableHandle className="w-2 bg-black rounded-lg transition-colors" />
 
         {/* Main Outlet */}
+
         <ResizablePanel
           defaultSize={60}
           className="w-full md:w-3/5 lg:w-3/4"
         >
+          <Topbar />
           <Outlet />
         </ResizablePanel>
 
@@ -42,7 +46,7 @@ const Layout = () => {
           collapsedSize={0}
           className="hidden md:block w-0 md:w-1/5 lg:w-1/4"
         >
-          Right Sidebar
+          <Activity />
         </ResizablePanel>
       </ResizablePanelGroup>
     </div>
