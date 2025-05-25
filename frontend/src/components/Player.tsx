@@ -8,6 +8,7 @@ import {
 } from "lucide-react";
 import { useMusicContext } from "@/context/MusicContext";
 import { useEffect, useRef, useState } from "react";
+import Vinyl from "./Vinyl";
 
 // Format seconds to mm:ss
 const formatTime = (seconds: number) => {
@@ -21,6 +22,7 @@ const Player = () => {
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const [currentTime, setCurrentTime] = useState(0);
   const [duration, setDuration] = useState(0);
+  const [isPlaying, setIsPlaying] = useState(false);
 
   useEffect(() => {
     if (currentSong && audioRef.current) {
@@ -31,24 +33,27 @@ const Player = () => {
     }
   }, [currentSong]);
 
+  const placeholderImage = "https://t4.ftcdn.net/jpg/08/12/88/67/240_F_812886725_TVmFx7y2k6vGUaRyrVJhJ4umZiQEnQ3A.jpg";
+  const isSongLoaded = !!currentSong;
+
   return (
     <>
       <footer className="h-auto sm:h-24 bg-zinc-900 border-t border-zinc-800 px-4 pt-3 pb-0 sm:pb-3 text-white">
         <div className="flex flex-wrap sm:flex-nowrap items-center gap-4 sm:gap-0 max-w-[1800px] mx-auto w-full justify-center lg:justify-between">
-          
+
           {/* Song Info (Only on lg and above) */}
           <div className="hidden lg:flex items-center gap-4 min-w-[180px] w-[30%]">
-            <img
-              src={currentSong?.songImage || "https://via.placeholder.com/56"}
-              alt={currentSong?.title || "Song"}
-              className="w-14 h-14 object-cover rounded-md"
+            <Vinyl
+              coverImage={currentSong?.songImage || placeholderImage}
+              isPlaying={isPlaying}
             />
-            <div className="flex-1 min-w-0">
-              <p className="text-sm font-semibold truncate hover:underline cursor-pointer text-white">
-                {currentSong?.title || "Song Title"}
+            <div
+              className={`flex-1 min-w-0 transition-all duration-300 ${currentSong ? "ml-5" : "ml-0"}`}
+            >              <p className="text-sm font-semibold truncate hover:underline cursor-pointer text-white">
+                {currentSong?.title || "No song playing"}
               </p>
               <p className="text-xs text-zinc-400 truncate hover:underline cursor-pointer">
-                {currentSong?.artist || "Artist Name"}
+                {currentSong?.artist || "Unknown artist"}
               </p>
             </div>
           </div>
@@ -85,10 +90,10 @@ const Player = () => {
 
             {/* Now Playing (inline for small/medium screens) */}
             <div className="lg:hidden text-xs text-zinc-400 truncate max-w-full text-center px-2">
-              {currentSong?.title ? (
+              {currentSong ? (
                 <>
                   <span className="text-white font-medium">{currentSong.title}</span>
-                  {currentSong?.artist && (
+                  {currentSong.artist && (
                     <span className="ml-1 text-zinc-400">by {currentSong.artist}</span>
                   )}
                 </>
@@ -104,15 +109,11 @@ const Player = () => {
                 <div className="w-full h-1 bg-zinc-600 rounded-full" />
                 <div
                   className="absolute top-0 left-0 h-1 bg-green-500 rounded-full"
-                  style={{
-                    width: `${(currentTime / (duration || 1)) * 100}%`,
-                  }}
+                  style={{ width: `${(currentTime / (duration || 1)) * 100}%` }}
                 />
                 <div
                   className="absolute top-1/2 -translate-y-1/2 w-3 h-3 bg-white rounded-full opacity-0 group-hover:opacity-100 transition-opacity"
-                  style={{
-                    left: `calc(${(currentTime / (duration || 1)) * 100}% - 6px)`,
-                  }}
+                  style={{ left: `calc(${(currentTime / (duration || 1)) * 100}% - 6px)` }}
                 />
                 <input
                   type="range"
@@ -157,11 +158,13 @@ const Player = () => {
       </footer>
 
       {/* Audio Element */}
-      {currentSong && (
+      {isSongLoaded && (
         <audio
           ref={audioRef}
           hidden
           controls
+          onPlay={() => setIsPlaying(true)}
+          onPause={() => setIsPlaying(false)}
           onTimeUpdate={() => {
             if (audioRef.current) setCurrentTime(audioRef.current.currentTime);
           }}
