@@ -3,6 +3,7 @@ import Layout from "./layout/Layout"
 import Chat from "./pages/Chat"
 import Home from "./pages/Home"
 import Album from "./pages/Album"
+import Player from "./components/Player"
 
 
 function App() {

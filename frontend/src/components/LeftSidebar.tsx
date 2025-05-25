@@ -10,7 +10,7 @@ const LeftSidebar = () => {
 
     //fetch data from the server
     return (
-        <div className="h-full flex flex-col gap-2">
+        <div className="h-[88vh] flex flex-col gap-2">
             {/* Navigation */}
             <div className="rounded-lg bg-zinc-900 p-4">
                 <nav className="space-y-2">

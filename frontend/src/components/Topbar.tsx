@@ -7,7 +7,7 @@ import UserDropdown from "./UserDropdown";
 
 const Topbar = () => {
     return (
-        <div className="rounded-md mb-4 h-16 w-full flex items-center justify-between px-6 sticky top-0 z-10 bg-zinc-900/80 backdrop-blur-md">
+        <div className="rounded-md mb-2 h-16 w-full flex items-center justify-between px-6 sticky top-0 z-10 bg-zinc-900/80 backdrop-blur-md">
             {/* Search Bar */}
             <div className="flex items-center bg-zinc-800 px-4 py-2 h-10 rounded-full max-w-[364px] w-full text-sm text-zinc-100">
                 <Search className="w-4 h-4 text-zinc-400 mr-2" />
