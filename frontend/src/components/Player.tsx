@@ -6,11 +6,10 @@ import {
   Shuffle,
   Volume1,
 } from "lucide-react";
-import { useMusicContext } from "@/context/MusicContext";
 import { useEffect, useRef, useState } from "react";
 import Vinyl from "./Vinyl";
+import { useMusicContext } from "@/context/MusicContext";
 
-// Format seconds to mm:ss
 const formatTime = (seconds: number) => {
   const mins = Math.floor(seconds / 60);
   const secs = Math.floor(seconds % 60);
@@ -18,38 +17,60 @@ const formatTime = (seconds: number) => {
 };
 
 const Player = () => {
-  const { currentSong } = useMusicContext();
+  const {
+    currentSong,
+    playNext,
+    playPrevious,
+    togglePlayPause,
+    isPlaying,
+    setIsPlaying,
+    setAudioRef,
+  } = useMusicContext();
+
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const [currentTime, setCurrentTime] = useState(0);
   const [duration, setDuration] = useState(0);
-  const [isPlaying, setIsPlaying] = useState(false);
+
+  const placeholderImage =
+    "https://t4.ftcdn.net/jpg/08/12/88/67/240_F_812886725_TVmFx7y2k6vGUaRyrVJhJ4umZiQEnQ3A.jpg";
+
+  useEffect(() => {
+    if (audioRef.current) {
+      setAudioRef(audioRef.current);
+    }
+  }, [setAudioRef]);
 
   useEffect(() => {
     if (currentSong && audioRef.current) {
+      setCurrentTime(0);
+      setDuration(0);
       audioRef.current.load();
       audioRef.current
         .play()
-        .catch((err) => console.warn("Autoplay blocked or failed:", err));
+        .then(() => setIsPlaying(true))
+        .catch((err) => {
+          console.warn("Autoplay blocked or failed:", err);
+          setIsPlaying(false);
+        });
     }
   }, [currentSong]);
-
-  const placeholderImage = "https://t4.ftcdn.net/jpg/08/12/88/67/240_F_812886725_TVmFx7y2k6vGUaRyrVJhJ4umZiQEnQ3A.jpg";
-  const isSongLoaded = !!currentSong;
 
   return (
     <>
       <footer className="h-auto sm:h-24 bg-zinc-900 border-t border-zinc-800 px-4 pt-3 pb-0 sm:pb-3 text-white">
         <div className="flex flex-wrap sm:flex-nowrap items-center gap-4 sm:gap-0 max-w-[1800px] mx-auto w-full justify-center lg:justify-between">
-
-          {/* Song Info (Only on lg and above) */}
+          {/* Song Info */}
           <div className="hidden lg:flex items-center gap-4 min-w-[180px] w-[30%]">
             <Vinyl
               coverImage={currentSong?.songImage || placeholderImage}
               isPlaying={isPlaying}
             />
             <div
-              className={`flex-1 min-w-0 transition-all duration-300 ${currentSong ? "ml-5" : "ml-0"}`}
-            >              <p className="text-sm font-semibold truncate hover:underline cursor-pointer text-white">
+              className={`flex-1 min-w-0 transition-all duration-300 ease-in-out ${
+                currentSong ? "ml-5" : "ml-0"
+              }`}
+            >
+              <p className="text-sm font-semibold truncate hover:underline cursor-pointer text-white">
                 {currentSong?.title || "No song playing"}
               </p>
               <p className="text-xs text-zinc-400 truncate hover:underline cursor-pointer">
@@ -65,19 +86,36 @@ const Player = () => {
                 <Shuffle className="h-4 w-4" />
               </Button>
 
-              <Button size="icon" className="text-zinc-400 hover:text-white bg-transparent">
+              <Button
+                size="icon"
+                className="text-zinc-400 hover:text-white bg-transparent"
+                onClick={playPrevious}
+              >
                 <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 fill-current" viewBox="0 0 24 24">
                   <path d="M20 5v14l-8.5-7zM4 5h3v14H4z" />
                 </svg>
               </Button>
 
-              <Button className="bg-white hover:bg-white/80 text-black rounded-full h-10 w-10 flex items-center justify-center">
-                <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 fill-current" viewBox="0 0 24 24">
-                  <path d="M8 5v14l11-7z" />
-                </svg>
+              <Button
+                onClick={togglePlayPause}
+                className="bg-white hover:bg-white/80 text-black rounded-full h-10 w-10 flex items-center justify-center"
+              >
+                {isPlaying ? (
+                  <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 fill-current" viewBox="0 0 24 24">
+                    <path d="M6 4h4v16H6zM14 4h4v16h-4z" />
+                  </svg>
+                ) : (
+                  <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 fill-current" viewBox="0 0 24 24">
+                    <path d="M8 5v14l11-7z" />
+                  </svg>
+                )}
               </Button>
 
-              <Button size="icon" className="text-zinc-400 hover:text-white bg-transparent">
+              <Button
+                size="icon"
+                className="text-zinc-400 hover:text-white bg-transparent"
+                onClick={playNext}
+              >
                 <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 fill-current" viewBox="0 0 24 24">
                   <path d="M4 5v14l8.5-7zM17 5h3v14h-3z" />
                 </svg>
@@ -88,7 +126,7 @@ const Player = () => {
               </Button>
             </div>
 
-            {/* Now Playing (inline for small/medium screens) */}
+            {/* Mobile Now Playing */}
             <div className="lg:hidden text-xs text-zinc-400 truncate max-w-full text-center px-2">
               {currentSong ? (
                 <>
@@ -104,7 +142,9 @@ const Player = () => {
 
             {/* Progress Bar */}
             <div className="flex items-center gap-2 w-full">
-              <span className="text-xs text-white/70 min-w-[35px] text-right">{formatTime(currentTime)}</span>
+              <span className="text-xs text-white/70 min-w-[35px] text-right">
+                {formatTime(currentTime)}
+              </span>
               <div className="relative w-full h-1 group">
                 <div className="w-full h-1 bg-zinc-600 rounded-full" />
                 <div
@@ -131,21 +171,21 @@ const Player = () => {
                   className="absolute top-0 left-0 w-full h-1 opacity-0 cursor-pointer z-10"
                 />
               </div>
-              <span className="text-xs text-white/70 min-w-[35px]">{formatTime(duration)}</span>
+              <span className="text-xs text-white/70 min-w-[35px]">
+                {formatTime(duration)}
+              </span>
             </div>
           </div>
 
-          {/* Volume / Extra Controls (Only on lg and above) */}
+          {/* Volume Controls */}
           <div className="hidden lg:flex items-center gap-4 min-w-[180px] w-[30%] justify-end text-white">
             <Button size="icon" className="text-zinc-400 hover:text-white bg-transparent">
               <ListMusic className="h-4 w-4" />
             </Button>
-
             <div className="flex items-center gap-2 max-w-[140px] w-full">
               <Button size="icon" className="text-zinc-400 hover:text-white bg-transparent">
                 <Volume1 className="h-4 w-4" />
               </Button>
-
               <Slider
                 value={[100]}
                 max={100}
@@ -158,13 +198,19 @@ const Player = () => {
       </footer>
 
       {/* Audio Element */}
-      {isSongLoaded && (
+      {currentSong && (
         <audio
           ref={audioRef}
           hidden
           controls
           onPlay={() => setIsPlaying(true)}
           onPause={() => setIsPlaying(false)}
+          onEnded={() => {
+            setIsPlaying(false);
+            setCurrentTime(0);
+            setDuration(0);
+            playNext();
+          }}
           onTimeUpdate={() => {
             if (audioRef.current) setCurrentTime(audioRef.current.currentTime);
           }}
