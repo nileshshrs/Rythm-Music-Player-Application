@@ -1,6 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
-import { getAlbumsByID } from "@/api/api";
-import { AlbumResponse } from "../utils/types.ts";
+import { getAlbumsByID, getAllAlbums } from "@/api/api";
+import { Album, AlbumResponse } from "../utils/types.ts";
 
 export const useAlbum = (id: string | undefined) => {
   const { data, error, isLoading, isError, refetch } = useQuery<AlbumResponse>({
@@ -15,6 +15,25 @@ export const useAlbum = (id: string | undefined) => {
   return {
     album: data?.album,
     songs: data?.songs,
+    data,
+    error,
+    isLoading,
+    isError,
+    refetch,
+  };
+};
+
+export const useAlbums = () => {
+  const { data, error, isLoading, isError, refetch } = useQuery<Album[]>({
+    queryKey: ["albums"],
+    queryFn: async () => {
+      const response = await getAllAlbums();
+      return response;
+    },
+  });
+
+  return {
+    albums: data,
     data,
     error,
     isLoading,

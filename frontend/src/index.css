@@ -4,7 +4,10 @@
 
 *{
   box-sizing: border-box;
+
 }
+/* custom-scroll handles Spotify-like scroll styling */
+
 
 @custom-variant dark (&:is(.dark *));
 
