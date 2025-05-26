@@ -2,14 +2,14 @@ import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { useAlbum } from "@/hooks/useAlbums";
 import { formatDuration } from "@/utils/formatDuration";
-import { Clock } from "lucide-react";
+import { Clock, Shuffle } from "lucide-react";
 import { useParams, Link } from "react-router-dom";
 import React from "react";
 import { Song } from "@/utils/types";
 import { useMusicContext } from "@/context/MusicContext";
 
 const Album = () => {
-  const { playSingle, playAlbum } = useMusicContext()
+  const { playSingle, playAlbum } = useMusicContext();
   const { id } = useParams();
   const { album, songs, isLoading } = useAlbum(id);
 
@@ -17,15 +17,13 @@ const Album = () => {
     <div className="h-[80.1vh] overflow-hidden bg-gradient-to-b from-zinc-800 to-zinc-900 rounded-md">
       <ScrollArea className="h-full overflow-y-auto rounded-md">
         <div className="relative min-h-full pb-40">
-          {/* Background gradient overlay */}
           <div
             className="absolute inset-0 bg-gradient-to-b via-zinc-900/80 to-zinc-900 pointer-events-none"
             style={{
-              backgroundImage: `linear-gradient(to bottom, ${album?.themeColor || "#5038aa"}cc, rgba(24,24,27,0.8), #18181b)`
+              backgroundImage: `linear-gradient(to bottom, ${album?.themeColor || "#5038aa"}cc, rgba(24,24,27,0.8), #18181b)`,
             }}
           />
 
-          {/* Main content */}
           <div className="relative z-10">
             {/* Album Header */}
             <div className="flex flex-col md:flex-row items-center md:items-end gap-6 px-6 pt-10 pb-8">
@@ -54,25 +52,39 @@ const Album = () => {
               </div>
             </div>
 
-            {/* Play Button */}
-            <div className="px-6 pb-4 flex justify-center md:justify-start gap-6">
+            {/* Play + Shuffle Buttons */}
+            <div className="px-6 pb-4 flex gap-4 items-center justify-center md:justify-start">
+              {/* Play Button */}
               <Button
                 onClick={() => {
                   if (songs && songs.length > 0) {
                     playAlbum(songs);
                   }
                 }}
-                size="icon"
-                className="w-14 h-14 rounded-full bg-green-500 hover:bg-green-400 shadow-xl transition duration-200 transform hover:scale-105 flex items-center justify-center"
+                className="w-14 h-14 rounded-full bg-green-500 hover:bg-green-400 shadow-xl transition duration-200 transform hover:scale-105 flex items-center justify-center p-0"
               >
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
                   viewBox="0 0 24 24"
                   fill="#111827"
-                  className="w-8 h-8 ml-[2px]"
+                  className="w-8 h-8"
                 >
                   <path d="M5 3v18l15-9L5 3z" />
                 </svg>
+              </Button>
+
+              {/* Shuffle Button */}
+              <Button
+                onClick={() => {
+                  if (songs && songs.length > 1) {
+                    const randomIndex = Math.floor(Math.random() * songs.length);
+                    playAlbum(songs, randomIndex);
+                  }
+                }}
+                className="w-10 h-10 mt-[2px] rounded-full bg-zinc-700 hover:bg-zinc-600 shadow-xl transition duration-200 transform hover:scale-105 flex items-center justify-center p-0"
+                title="Shuffle Play"
+              >
+                <Shuffle className="w-5 h-5 text-white" />
               </Button>
             </div>
 
@@ -105,7 +117,10 @@ const Album = () => {
                     <div className="group hidden md:grid grid-cols-[16px_5fr_2fr_1fr] gap-4 py-3 text-sm text-zinc-200 hover:bg-zinc-800/50 rounded-lg transition-colors">
                       <div className="text-zinc-400 font-medium flex items-center justify-center relative w-4">
                         <span className="group-hover:hidden block">{index + 1}</span>
-                        <span className="hidden group-hover:flex pl-1.5">
+                        <span
+                          className="hidden group-hover:flex pl-1.5 cursor-pointer"
+                          onClick={() => playSingle(song)}
+                        >
                           <svg
                             xmlns="http://www.w3.org/2000/svg"
                             className="w-4 h-4 fill-zinc-300"
@@ -135,7 +150,10 @@ const Album = () => {
                     <div className="group grid md:hidden grid-cols-[16px_1fr_1fr_1fr] gap-2 py-3 text-sm text-zinc-200 border-b border-zinc-700/50">
                       <div className="text-zinc-400 font-medium flex items-center justify-center relative w-4">
                         <span className="group-hover:hidden block">{index + 1}</span>
-                        <span className="hidden group-hover:flex pl-1.5">
+                        <span
+                          className="hidden group-hover:flex pl-1.5 cursor-pointer"
+                          onClick={() => playSingle(song)}
+                        >
                           <svg
                             xmlns="http://www.w3.org/2000/svg"
                             className="w-4 h-4 fill-zinc-300"
