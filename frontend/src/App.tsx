@@ -4,6 +4,7 @@ import Chat from "./pages/Chat"
 import Home from "./pages/Home"
 import Album from "./pages/Album"
 import Search from "./pages/Search"
+import Songs from "./pages/Songs"
 
 
 function App() {
@@ -16,6 +17,7 @@ function App() {
           <Route path="/" element={<Home />} />
           <Route path="/messages" element={<Chat />} />
           <Route path="/album/:id" element={<Album />} />
+          <Route path="/songs/:id" element={<Songs />} />
           <Route path="/search" element={<Search />} /> {/* ✅ now using Search */}
 
         </Route>
