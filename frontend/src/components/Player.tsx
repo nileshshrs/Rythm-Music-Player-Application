@@ -28,6 +28,8 @@ const Player = () => {
     setAudioRef,
     loop,
     toggleLoop,
+    shuffle,
+    toggleShuffle,
   } = useMusicContext();
 
   const audioRef = useRef<HTMLAudioElement | null>(null);
@@ -86,12 +88,13 @@ const Player = () => {
     <>
       <footer className="h-auto sm:h-24 bg-zinc-900 border-t border-zinc-800 px-4 pt-3 pb-0 sm:pb-3 text-white">
         <div className="flex flex-wrap sm:flex-nowrap items-center gap-4 sm:gap-0 max-w-[1800px] mx-auto w-full justify-center lg:justify-between">
+          {/* Song Info */}
           <div className="hidden lg:flex items-center gap-4 min-w-[180px] w-[30%]">
             <Vinyl
               coverImage={currentSong?.songImage || placeholderImage}
               isPlaying={isPlaying}
             />
-            <div className={`flex-1 min-w-0 ${currentSong ? "ml-5" : "ml-0"}`}>
+            <div className={`flex-1 min-w-0 ${currentSong ? "ml-5" : "ml-5"}`}>
               <p className="text-sm font-semibold truncate text-white">
                 {currentSong?.title || "No song playing"}
               </p>
@@ -101,9 +104,14 @@ const Player = () => {
             </div>
           </div>
 
+          {/* Controls */}
           <div className="flex flex-col items-center gap-1 text-white w-full max-w-full px-0 sm:px-2">
             <div className="w-full flex items-center justify-center gap-4 sm:gap-6">
-              <Button size="icon" className="text-zinc-400 hover:text-white bg-transparent">
+              <Button
+                size="icon"
+                onClick={toggleShuffle}
+                className={`bg-transparent ${shuffle ? "text-green-500" : "text-zinc-400"} hover:text-white`}
+              >
                 <Shuffle className="h-4 w-4" />
               </Button>
 
@@ -143,6 +151,7 @@ const Player = () => {
               </Button>
             </div>
 
+            {/* Progress Bar */}
             <div className="flex items-center gap-2 w-full">
               <span className="text-xs text-white/70 min-w-[35px] text-right">
                 {formatTime(currentTime)}
@@ -179,7 +188,7 @@ const Player = () => {
             </div>
           </div>
 
-          {/* Volume */}
+          {/* Volume Controls */}
           <div className="hidden lg:flex items-center gap-4 min-w-[180px] w-[30%] justify-end text-white">
             <Button size="icon" className="text-zinc-400 hover:text-white bg-transparent">
               <ListMusic className="h-4 w-4" />
@@ -227,6 +236,7 @@ const Player = () => {
         </div>
       </footer>
 
+      {/* Audio Element */}
       {currentSong && (
         <audio
           ref={audioRef}
@@ -242,7 +252,6 @@ const Player = () => {
               setCurrentTime(0);
               setDuration(0);
               audio.currentTime = 0;
-
               setTimeout(() => {
                 audio.play().then(() => {
                   setIsPlaying(true);

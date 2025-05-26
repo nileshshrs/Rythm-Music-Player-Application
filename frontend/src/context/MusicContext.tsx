@@ -26,7 +26,8 @@ interface MusicContextType {
   setAudioRef: (ref: HTMLAudioElement | null) => void;
   loop: boolean;
   toggleLoop: () => void;
-  loopCurrentSong: () => void;
+  shuffle: boolean;
+  toggleShuffle: () => void;
 }
 
 const MusicContext = createContext<MusicContextType | undefined>(undefined);
@@ -37,12 +38,13 @@ export const MusicContextProvider = ({ children }: { children: ReactNode }) => {
   const [queueType, setQueueType] = useState<QueueType>("single");
   const [currentIndex, setCurrentIndex] = useState<number>(-1);
   const [isPlaying, setIsPlaying] = useState<boolean>(false);
+  const [playedIndices, setPlayedIndices] = useState<number[]>([]);
 
-  const getInitialLoop = (): boolean => {
-    const stored = localStorage.getItem("loop");
-    return stored ? JSON.parse(stored) : false;
-  };
+  const getInitialLoop = () => JSON.parse(localStorage.getItem("loop") || "false");
   const [loop, setLoop] = useState<boolean>(getInitialLoop());
+
+  const getInitialShuffle = () => JSON.parse(localStorage.getItem("shuffle") || "false");
+  const [shuffle, setShuffle] = useState<boolean>(getInitialShuffle());
 
   const audioRef = useRef<HTMLAudioElement | null>(null);
 
@@ -54,6 +56,15 @@ export const MusicContextProvider = ({ children }: { children: ReactNode }) => {
     setLoop((prev) => {
       const next = !prev;
       localStorage.setItem("loop", JSON.stringify(next));
+      return next;
+    });
+  };
+
+  const toggleShuffle = () => {
+    setShuffle((prev) => {
+      const next = !prev;
+      localStorage.setItem("shuffle", JSON.stringify(next));
+      if (next) setPlayedIndices([]);
       return next;
     });
   };
@@ -77,6 +88,7 @@ export const MusicContextProvider = ({ children }: { children: ReactNode }) => {
     setCurrentSong(song);
     setQueueType("single");
     setCurrentIndex(0);
+    setPlayedIndices([]);
   };
 
   const playAlbum = (songs: Song[], startIndex: number = 0) => {
@@ -84,22 +96,37 @@ export const MusicContextProvider = ({ children }: { children: ReactNode }) => {
     setQueueType("album");
     setCurrentSong(songs[startIndex]);
     setCurrentIndex(startIndex);
+    setPlayedIndices([startIndex]);
   };
 
-  const loopCurrentSong = () => {
-    if (audioRef.current) {
+  const playNext = () => {
+    if (loop && audioRef.current) {
       audioRef.current.currentTime = 0;
-      setIsPlaying(false);
       audioRef.current
         .play()
         .then(() => setIsPlaying(true))
         .catch((err) => console.warn("Loop play failed:", err));
+      return;
     }
-  };
 
-  const playNext = () => {
-    if (loop) {
-      loopCurrentSong();
+    if (shuffle && queue.length > 1) {
+      const allIndices = queue.map((_, i) => i);
+      const remaining = allIndices.filter(
+        (i) => i !== currentIndex && !playedIndices.includes(i)
+      );
+
+      if (remaining.length === 0) {
+        // All songs played — stop playback
+        setCurrentSong(null);
+        setCurrentIndex(-1);
+        setIsPlaying(false);
+        return;
+      }
+
+      const nextIndex = remaining[Math.floor(Math.random() * remaining.length)];
+      setPlayedIndices((prev) => [...prev, nextIndex]);
+      setCurrentSong(queue[nextIndex]);
+      setCurrentIndex(nextIndex);
       return;
     }
 
@@ -115,8 +142,12 @@ export const MusicContextProvider = ({ children }: { children: ReactNode }) => {
   };
 
   const playPrevious = () => {
-    if (loop) {
-      loopCurrentSong();
+    if (loop && audioRef.current) {
+      audioRef.current.currentTime = 0;
+      audioRef.current
+        .play()
+        .then(() => setIsPlaying(true))
+        .catch((err) => console.warn("Loop play failed:", err));
       return;
     }
 
@@ -148,7 +179,8 @@ export const MusicContextProvider = ({ children }: { children: ReactNode }) => {
         setAudioRef,
         loop,
         toggleLoop,
-        loopCurrentSong,
+        shuffle,
+        toggleShuffle,
       }}
     >
       {children}
