@@ -5,6 +5,7 @@ import {
   useContext,
   useRef,
   useState,
+  useEffect,
 } from "react";
 
 type QueueType = "single" | "album";
@@ -21,7 +22,11 @@ interface MusicContextType {
   isPlaying: boolean;
   setIsPlaying: (value: boolean) => void;
   currentIndex: number;
+  setCurrentIndex: (index: number) => void;
   setAudioRef: (ref: HTMLAudioElement | null) => void;
+  loop: boolean;
+  toggleLoop: () => void;
+  loopCurrentSong: () => void;
 }
 
 const MusicContext = createContext<MusicContextType | undefined>(undefined);
@@ -32,10 +37,25 @@ export const MusicContextProvider = ({ children }: { children: ReactNode }) => {
   const [queueType, setQueueType] = useState<QueueType>("single");
   const [currentIndex, setCurrentIndex] = useState<number>(-1);
   const [isPlaying, setIsPlaying] = useState<boolean>(false);
+
+  const getInitialLoop = (): boolean => {
+    const stored = localStorage.getItem("loop");
+    return stored ? JSON.parse(stored) : false;
+  };
+  const [loop, setLoop] = useState<boolean>(getInitialLoop());
+
   const audioRef = useRef<HTMLAudioElement | null>(null);
 
   const setAudioRef = (ref: HTMLAudioElement | null) => {
     audioRef.current = ref;
+  };
+
+  const toggleLoop = () => {
+    setLoop((prev) => {
+      const next = !prev;
+      localStorage.setItem("loop", JSON.stringify(next));
+      return next;
+    });
   };
 
   const togglePlayPause = () => {
@@ -66,7 +86,23 @@ export const MusicContextProvider = ({ children }: { children: ReactNode }) => {
     setCurrentIndex(startIndex);
   };
 
+  const loopCurrentSong = () => {
+    if (audioRef.current) {
+      audioRef.current.currentTime = 0;
+      setIsPlaying(false);
+      audioRef.current
+        .play()
+        .then(() => setIsPlaying(true))
+        .catch((err) => console.warn("Loop play failed:", err));
+    }
+  };
+
   const playNext = () => {
+    if (loop) {
+      loopCurrentSong();
+      return;
+    }
+
     const nextIndex = currentIndex + 1;
     if (nextIndex < queue.length) {
       setCurrentSong(queue[nextIndex]);
@@ -79,6 +115,11 @@ export const MusicContextProvider = ({ children }: { children: ReactNode }) => {
   };
 
   const playPrevious = () => {
+    if (loop) {
+      loopCurrentSong();
+      return;
+    }
+
     const prevIndex = currentIndex - 1;
     if (prevIndex >= 0) {
       setCurrentSong(queue[prevIndex]);
@@ -101,9 +142,13 @@ export const MusicContextProvider = ({ children }: { children: ReactNode }) => {
         playPrevious,
         togglePlayPause,
         isPlaying,
-        setIsPlaying, // exposed here
+        setIsPlaying,
         currentIndex,
+        setCurrentIndex,
         setAudioRef,
+        loop,
+        toggleLoop,
+        loopCurrentSong,
       }}
     >
       {children}
