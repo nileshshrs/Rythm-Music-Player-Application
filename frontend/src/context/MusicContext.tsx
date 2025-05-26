@@ -116,7 +116,6 @@ export const MusicContextProvider = ({ children }: { children: ReactNode }) => {
       );
 
       if (remaining.length === 0) {
-        // All songs played — stop playback
         setCurrentSong(null);
         setCurrentIndex(-1);
         setIsPlaying(false);

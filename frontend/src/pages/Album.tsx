@@ -7,11 +7,16 @@ import { useParams, Link } from "react-router-dom";
 import React from "react";
 import { Song } from "@/utils/types";
 import { useMusicContext } from "@/context/MusicContext";
+import Loader from "@/components/Loader";
 
 const Album = () => {
-  const { playSingle, playAlbum } = useMusicContext();
+  const { playSingle, playAlbum, currentSong } = useMusicContext();
   const { id } = useParams();
   const { album, songs, isLoading } = useAlbum(id);
+
+  if (isLoading) {
+    return <Loader />;
+  }
 
   return (
     <div className="h-[80.1vh] overflow-hidden bg-gradient-to-b from-zinc-800 to-zinc-900 rounded-md">
@@ -54,7 +59,6 @@ const Album = () => {
 
             {/* Play + Shuffle Buttons */}
             <div className="px-6 pb-4 flex gap-4 items-center justify-center md:justify-start">
-              {/* Play Button */}
               <Button
                 onClick={() => {
                   if (songs && songs.length > 0) {
@@ -73,7 +77,6 @@ const Album = () => {
                 </svg>
               </Button>
 
-              {/* Shuffle Button */}
               <Button
                 onClick={() => {
                   if (songs && songs.length > 1) {
@@ -111,75 +114,102 @@ const Album = () => {
             {/* Songs List */}
             <div className="px-4 md:px-10">
               <div className="space-y-2 py-4">
-                {songs?.map((song: Song, index: number) => (
-                  <React.Fragment key={song._id || index}>
-                    {/* Desktop Row */}
-                    <div className="group hidden md:grid grid-cols-[16px_5fr_2fr_1fr] gap-4 py-3 text-sm text-zinc-200 hover:bg-zinc-800/50 rounded-lg transition-colors">
-                      <div className="text-zinc-400 font-medium flex items-center justify-center relative w-4">
-                        <span className="group-hover:hidden block">{index + 1}</span>
-                        <span
-                          className="hidden group-hover:flex pl-1.5 cursor-pointer"
-                          onClick={() => playSingle(song)}
-                        >
-                          <svg
-                            xmlns="http://www.w3.org/2000/svg"
-                            className="w-4 h-4 fill-zinc-300"
-                            viewBox="0 0 24 24"
+                {songs?.map((song: Song, index: number) => {
+                  const isCurrent = currentSong?._id === song._id;
+                  return (
+                    <React.Fragment key={song._id || index}>
+                      {/* Desktop Row */}
+                      <div className="group hidden md:grid grid-cols-[16px_5fr_2fr_1fr] gap-4 py-3 text-sm text-zinc-200 hover:bg-zinc-800/50 rounded-lg transition-colors">
+                        <div className="text-zinc-400 font-medium flex items-center justify-center relative w-4">
+                          {isCurrent ? (
+                            <svg
+                              xmlns="http://www.w3.org/2000/svg"
+                              className="w-4 h-4 fill-green-400"
+                              viewBox="0 0 24 24"
+                            >
+                              <path d="M5 3v18l15-9L5 3z" />
+                            </svg>
+                          ) : (
+                            <>
+                              <span className="group-hover:hidden block">{index + 1}</span>
+                              <span
+                                className="hidden group-hover:flex pl-1.5 cursor-pointer"
+                                onClick={() => playSingle(song)}
+                              >
+                                <svg
+                                  xmlns="http://www.w3.org/2000/svg"
+                                  className="w-4 h-4 fill-zinc-300"
+                                  viewBox="0 0 24 24"
+                                >
+                                  <path d="M5 3v18l15-9L5 3z" />
+                                </svg>
+                              </span>
+                            </>
+                          )}
+                        </div>
+                        <div className="truncate font-medium">
+                          <Link
+                            to={`/songs/${song._id}`}
+                            className="text-zinc-100 hover:text-green-400 hover:underline transition-colors"
                           >
-                            <path d="M5 3v18l15-9L5 3z" />
-                          </svg>
-                        </span>
+                            {song.title}
+                          </Link>
+                        </div>
+                        <div className="truncate text-zinc-300 font-normal">
+                          {song.artist || "Unknown Artist"}
+                        </div>
+                        <div className="text-zinc-400 font-medium">
+                          {formatDuration(song.duration)}
+                        </div>
                       </div>
-                      <div className="truncate font-medium">
-                        <Link
-                          to={`/songs/${song._id}`}
-                          className="text-zinc-100 hover:text-green-400 hover:underline transition-colors"
-                        >
-                          {song.title}
-                        </Link>
-                      </div>
-                      <div className="truncate text-zinc-300 font-normal">
-                        {song.artist || "Unknown Artist"}
-                      </div>
-                      <div className="text-zinc-400 font-medium">
-                        {formatDuration(song.duration)}
-                      </div>
-                    </div>
 
-                    {/* Mobile Row */}
-                    <div className="group grid md:hidden grid-cols-[16px_1fr_1fr_1fr] gap-2 py-3 text-sm text-zinc-200 border-b border-zinc-700/50">
-                      <div className="text-zinc-400 font-medium flex items-center justify-center relative w-4">
-                        <span className="group-hover:hidden block">{index + 1}</span>
-                        <span
-                          className="hidden group-hover:flex pl-1.5 cursor-pointer"
-                          onClick={() => playSingle(song)}
-                        >
-                          <svg
-                            xmlns="http://www.w3.org/2000/svg"
-                            className="w-4 h-4 fill-zinc-300"
-                            viewBox="0 0 24 24"
+                      {/* Mobile Row */}
+                      <div className="group grid md:hidden grid-cols-[16px_1fr_1fr_1fr] gap-2 py-3 text-sm text-zinc-200 border-b border-zinc-700/50">
+                        <div className="text-zinc-400 font-medium flex items-center justify-center relative w-4">
+                          {isCurrent ? (
+                            <svg
+                              xmlns="http://www.w3.org/2000/svg"
+                              className="w-4 h-4 fill-green-400"
+                              viewBox="0 0 24 24"
+                            >
+                              <path d="M5 3v18l15-9L5 3z" />
+                            </svg>
+                          ) : (
+                            <>
+                              <span className="group-hover:hidden block">{index + 1}</span>
+                              <span
+                                className="hidden group-hover:flex pl-1.5 cursor-pointer"
+                                onClick={() => playSingle(song)}
+                              >
+                                <svg
+                                  xmlns="http://www.w3.org/2000/svg"
+                                  className="w-4 h-4 fill-zinc-300"
+                                  viewBox="0 0 24 24"
+                                >
+                                  <path d="M5 3v18l15-9L5 3z" />
+                                </svg>
+                              </span>
+                            </>
+                          )}
+                        </div>
+                        <div className="truncate font-medium">
+                          <Link
+                            to={`/songs/${song._id}`}
+                            className="text-zinc-100 hover:text-green-400 hover:underline transition-colors"
                           >
-                            <path d="M5 3v18l15-9L5 3z" />
-                          </svg>
-                        </span>
+                            {song.title}
+                          </Link>
+                        </div>
+                        <div className="truncate text-zinc-300 font-normal">
+                          {song.artist || "Unknown"}
+                        </div>
+                        <div className="text-zinc-400 font-medium">
+                          {formatDuration(song.duration)}
+                        </div>
                       </div>
-                      <div className="truncate font-medium">
-                        <Link
-                          to={`/songs/${song._id}`}
-                          className="text-zinc-100 hover:text-green-400 hover:underline transition-colors"
-                        >
-                          {song.title}
-                        </Link>
-                      </div>
-                      <div className="truncate text-zinc-300 font-normal">
-                        {song.artist || "Unknown"}
-                      </div>
-                      <div className="text-zinc-400 font-medium">
-                        {formatDuration(song.duration)}
-                      </div>
-                    </div>
-                  </React.Fragment>
-                ))}
+                    </React.Fragment>
+                  );
+                })}
               </div>
             </div>
           </div>

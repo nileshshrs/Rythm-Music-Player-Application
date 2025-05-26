@@ -7,10 +7,10 @@ const Home = () => {
   const { songs, isLoading } = useSongs();
 
   return (
-    <div className="rounded-md h-[80vh] overflow-hidden bg-gradient-to-b from-zinc-800 to-zinc-900">
+    <div className="h-[80vh] bg-gradient-to-b from-zinc-800 to-zinc-900 rounded-md overflow-hidden text-white">
       <ScrollArea className="h-full custom-scroll">
         <div className="p-4 sm:p-6 pb-40">
-          <h2 className="text-2xl sm:text-3xl font-bold text-white mb-6">
+          <h2 className="text-2xl sm:text-3xl font-bold mb-6">
             Good Afternoon, User
           </h2>
           <Featured />
