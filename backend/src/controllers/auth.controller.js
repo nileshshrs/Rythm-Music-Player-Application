@@ -27,11 +27,12 @@ export const registerController = catchErrors(
 
 export const loginController = catchErrors(
     async (req, res) => {
-
         const request = {
             ...req.body,
             userAgent: req.headers["user-agent"],
         }
+
+        console.log(request)
 
         const { user, accessToken, refreshToken } = await login(request)
         return setAuthCookies(res, accessToken, refreshToken).status(OK).json({

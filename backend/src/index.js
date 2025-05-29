@@ -11,6 +11,7 @@ import userRoutes from './routes/user.routes.js';
 import albumRoutes from './routes/album.routes.js';
 import uploadRoutes from './routes/upload.routes.js';
 import songRoutes from './routes/song.routes.js';
+import playlistRoutes from './routes/playlist.routes.js';
 
 // Create the Express app
 const app = express();
@@ -32,7 +33,7 @@ app.use("/api/v1/user", authenticate, userRoutes)
 app.use("/api/v1/album",  albumRoutes) // Ensure albumRoutes is imported correctly
 app.use("/api/v1/upload", uploadRoutes) // Ensure userRoutes is imported correctly
 app.use("/api/v1/songs", songRoutes) // Ensure albumRoutes is imported correctly
-
+app.use("/api/v1/playlist", authenticate, playlistRoutes)
 
 app.use(error)
 
