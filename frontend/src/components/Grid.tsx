@@ -76,7 +76,7 @@ const Grid: React.FC<GridProps> = ({ title, songs, isLoading }) => {
                       className="text-zinc-400 whitespace-nowrap hover:underline hover:text-white transition"
                       onClick={(e) => e.stopPropagation()}
                     >
-                      View album
+                      {song.albumTitle}
                     </Link>
                   </>
                 )}

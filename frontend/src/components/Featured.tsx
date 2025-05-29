@@ -26,9 +26,8 @@ const Featured = () => {
   return (
     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-8">
       {randomSix.map((song: Song) => (
-        <Link
+        <div
           key={song._id}
-          to={`/songs/${song._id}`}
           className="flex items-center bg-[#1c1c1e] hover:bg-[#18181b] transition-colors duration-200 rounded-sm overflow-hidden px-4 py-3 group"
         >
           {/* Song image with play button */}
@@ -52,12 +51,15 @@ const Featured = () => {
 
           {/* Song info */}
           <div className="flex-1 pl-4 space-y-1 overflow-hidden">
-            <p className="text-sm font-semibold text-white truncate group-hover:underline group-hover:text-white">
+            <Link
+              to={`/songs/${song._id}`}
+              className="block text-sm font-semibold text-white truncate group-hover:underline group-hover:text-white"
+            >
               {song.title}
-            </p>
+            </Link>
             <p className="text-xs text-zinc-400 truncate">{song.artist}</p>
           </div>
-        </Link>
+        </div>
       ))}
     </div>
   );

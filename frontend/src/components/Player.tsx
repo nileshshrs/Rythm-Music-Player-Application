@@ -193,7 +193,7 @@ const Player = () => {
             <Button size="icon" className="text-zinc-400 hover:text-white bg-transparent">
               <ListMusic className="h-4 w-4" />
             </Button>
-            <div className="flex items-center gap-2 max-w-[140px] w-full">
+            <div className="flex items-center gap-2 max-w-[160px] w-full">
               <Button
                 size="icon"
                 className="text-zinc-400 hover:text-white bg-transparent"
@@ -231,6 +231,7 @@ const Player = () => {
                   className="absolute top-0 left-0 w-full h-1 opacity-0 cursor-pointer z-10"
                 />
               </div>
+              <span className="text-xs text-white w-[30px] text-right">{volume}</span>
             </div>
           </div>
         </div>

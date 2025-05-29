@@ -7,7 +7,7 @@ interface EmptyResultProps {
 
 const EmptyResult = ({ query, message }: EmptyResultProps) => {
   return (
-    <div className="text-center space-y-8 px-4">
+    <div className="flex flex-col items-center justify-center h-full text-center space-y-8 px-4">
       <div className="flex justify-center animate-bounce">
         <IoMusicalNote className="h-24 w-24 text-[#1DB954]" />
       </div>

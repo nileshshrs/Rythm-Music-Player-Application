@@ -26,3 +26,11 @@ export const getAllAlbums = async (): Promise<any> => {
     throw error;
   }
 };
+
+export const getSongsByID = async(id: string): Promise<any> => {
+  try {
+    return await API.get(`/songs/${id}`);
+  } catch (error) {
+    throw error;
+  }
+}

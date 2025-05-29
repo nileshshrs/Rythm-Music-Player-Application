@@ -23,7 +23,8 @@ export type Song = {
     duration: number; // seconds
     songImage: string;
     album?: string; // album ID
-
+    albumTitle?: string; // album title for display
+    themeColor?: string; // color for UI theming
 };
 
 export interface AlbumResponse {
