@@ -98,7 +98,6 @@ export const MusicContextProvider = ({ children }: { children: ReactNode }) => {
     setCurrentIndex(startIndex);
     setPlayedIndices([startIndex]);
   };
-
   const playNext = () => {
     if (loop && audioRef.current) {
       audioRef.current.currentTime = 0;
@@ -111,11 +110,17 @@ export const MusicContextProvider = ({ children }: { children: ReactNode }) => {
 
     if (shuffle && queue.length > 1) {
       const allIndices = queue.map((_, i) => i);
-      const remaining = allIndices.filter(
-        (i) => i !== currentIndex && !playedIndices.includes(i)
-      );
+
+      // Ensure currentIndex is marked as played only once
+      setPlayedIndices((prev) => {
+        if (!prev.includes(currentIndex)) return [...prev, currentIndex];
+        return prev;
+      });
+
+      const remaining = allIndices.filter((i) => !playedIndices.includes(i) && i !== currentIndex);
 
       if (remaining.length === 0) {
+        // Nothing left to play
         setCurrentSong(null);
         setCurrentIndex(-1);
         setIsPlaying(false);
@@ -129,6 +134,7 @@ export const MusicContextProvider = ({ children }: { children: ReactNode }) => {
       return;
     }
 
+    // Normal (non-shuffle) playback
     const nextIndex = currentIndex + 1;
     if (nextIndex < queue.length) {
       setCurrentSong(queue[nextIndex]);
@@ -139,6 +145,7 @@ export const MusicContextProvider = ({ children }: { children: ReactNode }) => {
       setIsPlaying(false);
     }
   };
+
 
   const playPrevious = () => {
     if (loop && audioRef.current) {
