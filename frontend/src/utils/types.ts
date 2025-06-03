@@ -21,7 +21,7 @@ export type Song = {
     artistImage?: string;
     audioUrl: string;
     duration: number; // seconds
-    songImage: string;
+    songImage?: string;
     album?: string; // album ID
     albumTitle?: string; // album title for display
     themeColor?: string; // color for UI theming
@@ -30,4 +30,17 @@ export type Song = {
 export interface AlbumResponse {
     album?: Album;
     songs?: Song[];
+};
+
+
+export type Playlist = {
+  _id: string;
+  name: string;
+  coverImage?: string;
+  description?: string;
+  songs: Song[];
+  themeColor: string;
+  createdAt: string; // ISO string, parse as Date if needed
+  updatedAt: string; // ISO string
+  username: string;
 };

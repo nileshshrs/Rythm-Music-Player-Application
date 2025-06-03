@@ -2,17 +2,20 @@ import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { useAlbum } from "@/hooks/useAlbums";
 import { formatDuration } from "@/utils/formatDuration";
-import { Clock, Shuffle } from "lucide-react";
+import { Clock, Plus, Shuffle } from "lucide-react";
 import { useParams, Link } from "react-router-dom";
 import React from "react";
 import { Song } from "@/utils/types";
 import { useMusicContext } from "@/context/MusicContext";
 import Loader from "@/components/Loader";
+import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
+import { useCreatePlaylistFromAlbum } from "@/hooks/usePlaylist";
 
 const Album = () => {
   const { playSingle, playAlbum, currentSong } = useMusicContext();
   const { id } = useParams();
   const { album, songs, isLoading } = useAlbum(id);
+  const { mutate: createPlaylistFromAlbum } = useCreatePlaylistFromAlbum(id);
 
   if (isLoading) {
     return <Loader />;
@@ -89,6 +92,22 @@ const Album = () => {
               >
                 <Shuffle className="w-5 h-5 text-white" />
               </Button>
+
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Button
+                    onClick={() => createPlaylistFromAlbum()}
+                    disabled={!id}
+                    size="icon"
+                    className="w-10 h-10 mt-[2px] rounded-full bg-zinc-700 hover:bg-zinc-600 shadow-xl transition duration-200 transform hover:scale-105 flex items-center justify-center p-0"
+                  >
+                    <Plus className="w-5 h-5 text-white" />
+                  </Button>
+                </TooltipTrigger>
+                <TooltipContent side="right">
+                  <p>Add album to playlist</p>
+                </TooltipContent>
+              </Tooltip>
             </div>
 
             {/* Header Row - Desktop */}

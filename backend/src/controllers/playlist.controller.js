@@ -60,7 +60,7 @@ export const getPlaylistByIdController = catchErrors(
         })
             .populate({
                 path: "songs",
-                select: "title artist duration",
+                select: "title artist duration audioUrl songImage",
             })
             .populate("owner", "username", "user")
             .lean();

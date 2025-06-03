@@ -42,3 +42,23 @@ export const getPlayistsByUser = async (): Promise<any> => {
     throw error;
   }
 }
+
+export const createEmptyPlaylist = async (): Promise<any> => {
+  return await API.post("/playlist/create")
+}
+
+export const createPlaylistFromAlbum = async (albumID: string): Promise<any> => {
+  const response = await API.post("/playlist/create-from-album", { albumID });
+  return response;
+};
+
+
+export const getPlaylistById = async (playlistId: string): Promise<any> => {
+  const data = await API.get(`/playlist/${playlistId}`);
+  return data;
+};
+
+export const deletePlaylist = async (playlistId: string): Promise<any> => {
+  const response = await API.delete(`/playlist/delete/${playlistId}`);
+  return response;
+};

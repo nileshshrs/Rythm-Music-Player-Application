@@ -56,7 +56,7 @@ const Player = () => {
   }, [volume, isMuted]);
 
   const placeholderImage =
-    "https://t4.ftcdn.net/jpg/08/12/88/67/240_F_812886725_TVmFx7y2k6vGUaRyrVJhJ4umZiQEnQ3A.jpg";
+    "/Note.jpg";
 
   useEffect(() => {
     if (audioRef.current) {
@@ -150,6 +150,11 @@ const Player = () => {
                 <Repeat className="h-4 w-4" />
               </Button>
             </div>
+            {currentSong && (
+              <div className="block lg:hidden text-white text-sm font-medium truncate text-center w-full px-4">
+                {currentSong.title} <span className="text-zinc-400">  —  </span> {currentSong.artist}
+              </div>
+            )}
 
             {/* Progress Bar */}
             <div className="flex items-center gap-2 w-full">
