@@ -1,5 +1,5 @@
 import API from "./apiClient";
-import { AlbumResponse} from "@/utils/types";
+import { AlbumResponse } from "@/utils/types";
 
 export const getAlbumsByID = async (id: string): Promise<AlbumResponse> => {
   try {
@@ -27,9 +27,17 @@ export const getAllAlbums = async (): Promise<any> => {
   }
 };
 
-export const getSongsByID = async(id: string): Promise<any> => {
+export const getSongsByID = async (id: string): Promise<any> => {
   try {
     return await API.get(`/songs/${id}`);
+  } catch (error) {
+    throw error;
+  }
+}
+
+export const getPlayistsByUser = async (): Promise<any> => {
+  try {
+    return await API.get("playlist/get-by-user");
   } catch (error) {
     throw error;
   }

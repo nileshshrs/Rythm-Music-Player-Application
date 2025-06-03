@@ -8,7 +8,7 @@ import { CREATED, NOT_FOUND, OK } from "../utils/constants/http.js";
 
 export const createEmptyPlaylistController = catchErrors(
     async (req, res) => {
-        const userID = req.userID;
+        const userID = "683869119da4e67d3ea478b1";
 
 
         const name = await generateNextPlaylistName(userID);
@@ -28,10 +28,12 @@ export const createEmptyPlaylistController = catchErrors(
 
 export const getPlaylistsByUserController = catchErrors(
     async (req, res) => {
-        const userID = req.userID;
+        const userID = "683869119da4e67d3ea478b1";
 
         const playlists = await PlaylistModel.find({ owner: userID })
-            .select("_id name coverImage songs")
+            .select("_id name coverImage songs owner")
+            .populate("owner", "username", "user")
+            .sort({ createdAt: 1 }) // Ascending: oldest to newest
             .lean();
 
         const minimalPlaylists = playlists.map((playlist) => ({
@@ -39,6 +41,7 @@ export const getPlaylistsByUserController = catchErrors(
             name: playlist.name,
             coverImage: playlist.coverImage,
             totalSongs: playlist.songs.length,
+            username: playlist.owner.username
         }));
 
         return res.status(OK).json(minimalPlaylists);
@@ -49,7 +52,7 @@ export const getPlaylistsByUserController = catchErrors(
 export const getPlaylistByIdController = catchErrors(
     async (req, res) => {
         const { id } = req.params;
-        const userID = req.userID;
+        const userID = "683869119da4e67d3ea478b1";
 
         const playlist = await PlaylistModel.findOne({
             _id: id,
@@ -59,18 +62,27 @@ export const getPlaylistByIdController = catchErrors(
                 path: "songs",
                 select: "title artist duration",
             })
+            .populate("owner", "username", "user")
             .lean();
 
         appAssert(playlist, NOT_FOUND, "Playlist not found");
 
-        return res.status(OK).json(playlist);
+        // Extract only the username to the top level
+        const response = {
+            ...playlist,
+            username: playlist.owner.username,
+        };
+        delete response.owner;
+
+        return res.status(OK).json(response);
     }
 );
+
 
 export const addSongToPlaylistController = catchErrors(
     async (req, res) => {
         const { id } = req.params;
-        const userID = req.userID;
+        const userID = "683869119da4e67d3ea478b1";
         const { songID } = req.body;
 
         const playlist = await PlaylistModel.findOne({
@@ -95,8 +107,8 @@ export const addSongToPlaylistController = catchErrors(
 export const updatePlaylistController = catchErrors(
     async (req, res) => {
         const { id } = req.params;
-        const userID = req.userID; // comes from authenticate middleware
-        const { name, themeColor, coverImage } = req.body;
+        const userID = "683869119da4e67d3ea478b1"; // comes from authenticate middleware
+        const { name, themeColor, coverImage, description } = req.body;
 
         const playlist = await PlaylistModel.findOne({
             _id: id,
@@ -108,6 +120,7 @@ export const updatePlaylistController = catchErrors(
         if (name) playlist.name = name;
         if (themeColor) playlist.themeColor = themeColor;
         if (coverImage) playlist.coverImage = coverImage;
+        if (description !== undefined) playlist.description = description;
 
         await playlist.save();
 
@@ -121,7 +134,7 @@ export const updatePlaylistController = catchErrors(
 
 
 export const createPlaylistFromAlbumController = catchErrors(async (req, res) => {
-    const userID = req.userID;
+    const userID = "683869119da4e67d3ea478b1";
     const { albumID } = req.body;
 
     appAssert(albumID, NOT_FOUND, "Album ID is required");
@@ -148,7 +161,7 @@ export const createPlaylistFromAlbumController = catchErrors(async (req, res) =>
 export const deletePlaylistController = catchErrors(
     async (req, res) => {
         const { id } = req.params;
-        const userID = req.userID;
+        const userID = "683869119da4e67d3ea478b1";
 
         const deleted = await playlistModel.findOneAndDelete({
             _id: id,

@@ -16,8 +16,8 @@ const Layout = () => {
         {/* Left Sidebar */}
         <ResizablePanel
           defaultSize={20}
-          minSize={10}
-          maxSize={30}
+          minSize={6}
+          maxSize={20}
           className="w-full md:w-1/5 lg:w-1/4"
         >
           <LeftSidebar />
@@ -41,7 +41,7 @@ const Layout = () => {
         <ResizablePanel
           defaultSize={20}
           minSize={0}
-          maxSize={25}
+          maxSize={20}
           collapsedSize={0}
           className="hidden md:block w-0 md:w-1/5 lg:w-1/4"
         >

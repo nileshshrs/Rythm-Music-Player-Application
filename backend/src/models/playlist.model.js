@@ -26,6 +26,11 @@ const playlistSchema = new mongoose.Schema(
             type: String,
             default: "#5038aa", // store just the base color
         },
+        description: {
+            type: String,
+            default: "",
+            trim: true,
+        },
     },
     {
         timestamps: true,

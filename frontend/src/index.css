@@ -129,6 +129,59 @@
   }
 }
 
+.playlist-image-wrap {
+  position: relative;
+  width: 48px;
+  height: 48px;
+}
+
+.playlist-image {
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: 3;
+  width: 100%;
+  height: 100%;
+  background-size: 100% 100%;
+  background-position: center;
+  background-repeat: no-repeat;
+  border-radius: 4px;
+  box-shadow:
+    5px 0 20px rgba(0, 0, 0, 0.6),
+    inset 0 0 10px 5px rgba(255, 255, 255, 0.2),
+    inset 0 0 4px 2px rgba(0, 0, 0, 0.2);
+}
+
+.playlist-image-overlay-1::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: 4;
+  width: 100%;
+  height: 100%;
+  background-image: url('/vinyl-bg-2.jpeg');
+  background-size: 100% 100%;
+  border-radius: 4px;
+  mix-blend-mode: screen;
+  opacity: 0.01;
+}
+
+.playlist-image-overlay-2::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: 5;
+  width: 100%;
+  height: 100%;
+  background-image: url('/vinyl-bg-1.jpg');
+  background-size: 100% 100%;
+  border-radius: 4px;
+  mix-blend-mode: screen;
+  opacity: 0.01;
+}
+
 
 @custom-variant dark (&:is(.dark *));
 
@@ -238,6 +291,8 @@
   --sidebar-border: oklch(1 0 0 / 10%);
   --sidebar-ring: oklch(0.556 0 0);
 }
+
+
 
 @layer base {
   * {
