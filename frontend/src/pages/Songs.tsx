@@ -10,17 +10,18 @@ import { Link, useParams } from "react-router-dom";
 import { formatDuration } from "@/utils/formatDuration";
 import { useSongByID } from "@/hooks/useSongs";
 import Loader from "@/components/Loader";
+import { useAddSongToPlaylist, useUserPlaylists } from "@/hooks/usePlaylist";
 
 const Songs = () => {
   const { id } = useParams<{ id: string }>();
   const { song, isLoading, isError } = useSongByID(id || "");
+  const { playlists } = useUserPlaylists();
+  const addSongToPlaylistMutation = useAddSongToPlaylist();
 
-  const playlists = Array.from({ length: 11 }, (_, i) => `Playlist ${i + 1}`);
 
   if (isLoading) {
     return <Loader />;
   }
-
 
   if (isError || !song) {
     return <div className="text-center text-red-500 py-10">Failed to load song.</div>;
@@ -89,16 +90,26 @@ const Songs = () => {
                   <div className="px-3 py-2 text-[14px] select-none border-b border-zinc-800">
                     Your Playlists
                   </div>
-                  <ScrollArea className="h-48 w-full">
-                    <div className="p-1">
-                      {playlists.map((playlist) => (
-                        <div
-                          key={playlist}
-                          className="px-3 py-2 text-[13px] cursor-pointer hover:bg-zinc-800/40 hover:text-white rounded transition-colors"
-                        >
-                          {playlist}
-                        </div>
-                      ))}
+                  <ScrollArea className="h-32 w-full">
+                    <div className="p-1 ">
+                      {playlists && playlists.length > 0 ? (
+                        playlists.map((playlist: any) => (
+                          <div
+                            key={playlist._id}
+                            onClick={() => {
+                              addSongToPlaylistMutation.mutate({
+                                playlistId: playlist._id,
+                                songId: song._id,
+                              });
+                            }}
+                            className="px-3 py-2 text-[13px] cursor-pointer hover:bg-zinc-800/40 hover:text-white rounded transition-colors"
+                          >
+                            {playlist.name}
+                          </div>
+                        ))
+                      ) : (
+                        <div className="px-3 py-2 text-zinc-400">No playlists found.</div>
+                      )}
                     </div>
                   </ScrollArea>
                 </DropdownMenuContent>

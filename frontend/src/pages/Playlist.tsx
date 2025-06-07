@@ -16,17 +16,44 @@ import {
     DropdownMenuItem,
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { useDeletePlaylist, usePlaylistById } from "@/hooks/usePlaylist";
+import { useDeletePlaylist, usePlaylistById, useUpdatePlaylist } from "@/hooks/usePlaylist";
+import { useUploadImage } from "@/hooks/useImage";
 import { Song } from "@/utils/types";
 import { useMusicContext } from "@/context/MusicContext";
+import EditPlaylist from "@/components/EditPlaylist";
+import Loader from "@/components/Loader";
 
 const Playlist = () => {
+    // For Edit dialog
+    const [editDialogOpen, setEditDialogOpen] = React.useState(false);
+
+    // For image upload
+    const { mutate: uploadImage } = useUploadImage();
+    const { mutate: updatePlaylist } = useUpdatePlaylist();
+    const fileInputRef = React.useRef<HTMLInputElement | null>(null);
+
     const { id } = useParams();
     const { data: playlist, isLoading } = usePlaylistById(id);
     const { playAlbum, playSingle, currentSong } = useMusicContext();
     const { mutate: deletePlaylist } = useDeletePlaylist();
 
-    if (isLoading || !playlist) return null;
+    if (isLoading || !playlist) return <Loader />;;
+
+    function handleCoverImageChange(e: React.ChangeEvent<HTMLInputElement>) {
+        const file = e.target.files?.[0];
+        if (file && playlist._id) {
+            uploadImage(file, {
+                onSuccess: (imageUrl: string) => {
+                    // Only after successful upload do we update the playlist
+                    updatePlaylist({
+                        playlistId: playlist._id,
+                        data: { coverImage: imageUrl },
+                    });
+                },
+            });
+        }
+    }
+
 
     return (
         <div className="h-[80.1vh] overflow-hidden bg-gradient-to-b from-zinc-800 to-zinc-900 rounded-md">
@@ -41,14 +68,47 @@ const Playlist = () => {
 
                     <div className="relative z-10">
                         <div className="flex flex-col md:flex-row items-center md:items-end gap-6 px-6 pt-10 pb-8">
-                            <img
-                                src={playlist.coverImage?.trim() ? playlist.coverImage : "/Note.jpg"}
-                                alt="Playlist Cover"
-                                className="w-[200px] h-[200px] md:w-[240px] md:h-[240px] shadow-2xl rounded-lg"
-                            />
+                            {/* ---- Cover image with overlay ---- */}
+                            <div className="relative group w-[200px] h-[200px] md:w-[240px] md:h-[240px] shadow-2xl rounded-lg overflow-hidden">
+                                <img
+                                    src={playlist.coverImage?.trim() ? playlist.coverImage : "/Note.jpg"}
+                                    alt="Playlist Cover"
+                                    className="w-full h-full object-cover rounded-lg"
+                                />
+                                {/* Hover overlay for editing */}
+                                <div
+                                    className="absolute inset-0 bg-black/70 flex flex-col items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer z-10"
+                                    onClick={() => fileInputRef.current?.click()}
+                                >
+                                    <svg width={36} height={36} viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth={2.2} strokeLinecap="round" strokeLinejoin="round">
+                                        <path d="M12 20h9" />
+                                        <path d="M16.5 3.5a2.121 2.121 0 1 1 3 3L7 19.5l-4 1 1-4L16.5 3.5z" />
+                                    </svg>
+                                    <span className="mt-2 text-white font-semibold text-sm drop-shadow">Change cover</span>
+                                </div>
+                                <input
+                                    type="file"
+                                    accept="image/*"
+                                    ref={fileInputRef}
+                                    className="absolute inset-0 opacity-0 z-20 cursor-pointer"
+                                    style={{ display: "none" }}
+                                    onChange={handleCoverImageChange}
+                                    aria-label="Change playlist cover image"
+                                />
+                            </div>
+
+                            {/* ---- End Cover image ---- */}
+
                             <div className="text-zinc-300 text-center md:text-left space-y-4">
                                 <p className="text-sm uppercase text-zinc-400 font-medium">Playlist</p>
                                 <h1 className="text-4xl md:text-6xl font-bold leading-tight">{playlist.name}</h1>
+                                {/* ---- Description ---- */}
+                                {playlist.description && (
+                                    <p className="text-base text-zinc-400 max-w-xl mx-auto md:mx-0 break-words whitespace-pre-line">
+                                        {playlist.description}
+                                    </p>
+                                )}
+                                {/* -------------------- */}
                                 <div className="flex flex-wrap justify-center md:justify-start items-center gap-3 text-sm text-zinc-200 font-medium">
                                     <span className="text-zinc-300 font-semibold">{playlist.username}</span>
                                     <span>&bull;</span>
@@ -98,7 +158,7 @@ const Playlist = () => {
                                     className="w-32 bg-zinc-800 hover:bg-zinc-800/40 text-white rounded-md px-1 py-1 text-sm font-medium shadow-xl border-none"
                                 >
                                     <DropdownMenuItem
-                                        onClick={() => console.log("Edit clicked")}
+                                        onClick={() => setEditDialogOpen(true)}
                                         className="flex items-center justify-between px-2 py-2 !text-white bg-zinc-800 hover:bg-zinc-800/40 focus:bg-zinc-800/40 rounded outline-none focus:ring-0 focus:outline-none"
                                     >
                                         <span className="!text-white">Edit</span>
@@ -201,6 +261,14 @@ const Playlist = () => {
                     </div>
                 </div>
             </ScrollArea>
+            <EditPlaylist
+                open={editDialogOpen}
+                onOpenChange={setEditDialogOpen}
+                initialName={playlist.name}
+                initialDescription={playlist.description}
+                initialThemeColor={playlist.themeColor}
+                initialCoverImage={playlist.coverImage}
+            />
         </div>
     );
 };

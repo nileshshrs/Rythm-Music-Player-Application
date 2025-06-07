@@ -1,4 +1,4 @@
-import { createEmptyPlaylist, createPlaylistFromAlbum, deletePlaylist, getPlayistsByUser, getPlaylistById } from "@/api/api";
+import { addSongToPlaylist, createEmptyPlaylist, createPlaylistFromAlbum, deletePlaylist, getPlayistsByUser, getPlaylistById, updatePlaylist } from "@/api/api";
 import { queryClient } from "@/main";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { useNavigate } from "react-router-dom";
@@ -81,3 +81,40 @@ export const useDeletePlaylist = () => {
         },
     });
 };
+
+export const useUpdatePlaylist = () => {
+    return useMutation({
+        mutationFn: ({
+            playlistId,
+            data,
+        }: {
+            playlistId: string;
+            data: {
+                name?: string;
+                themeColor?: string;
+                coverImage?: string;
+                description?: string;
+            };
+        }) => updatePlaylist(playlistId, data),
+        onSuccess: (_data, variables) => {
+            // Invalidate both user playlists and the specific playlist
+            queryClient.invalidateQueries({ queryKey: ["userplaylists"] });
+            queryClient.invalidateQueries({ queryKey: ["playlist", variables.playlistId] });
+        },
+    });
+};
+
+
+export const useAddSongToPlaylist = () => useMutation({
+    mutationFn: ({
+        playlistId,
+        songId,
+    }: {
+        playlistId: string;
+        songId: string;
+    }) => addSongToPlaylist(playlistId, songId),
+    onSuccess: (_data, variables) => {
+        queryClient.invalidateQueries({ queryKey: ["userplaylists"] });
+        queryClient.invalidateQueries({ queryKey: ["playlist", variables.playlistId] });
+    },
+});

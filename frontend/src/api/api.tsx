@@ -1,3 +1,4 @@
+import { AxiosResponse } from "axios";
 import API from "./apiClient";
 import { AlbumResponse } from "@/utils/types";
 
@@ -62,3 +63,55 @@ export const deletePlaylist = async (playlistId: string): Promise<any> => {
   const response = await API.delete(`/playlist/delete/${playlistId}`);
   return response;
 };
+
+export const updatePlaylist = async (
+  playlistId: string,
+  data: {
+    name?: string;
+    themeColor?: string;
+    coverImage?: string;
+    description?: string;
+  }
+): Promise<any> => {
+  try {
+    // PATCH /playlist/update/:id
+    const res = await API.patch(`/playlist/update/${playlistId}`, data);
+    return res;
+  } catch (error) {
+    throw error;
+  }
+};
+
+export const uploadImage = (file: File) => {
+  const formData = new FormData();
+  formData.append("image", file);
+
+  // This will handle both: if the interceptor failed OR not
+  return API.post("/upload/image", formData, {
+    headers: { "Content-Type": "multipart/form-data" }
+  }).then((res: any) => {
+    // If res.imageUrl exists, return it. If not, maybe it's an AxiosResponse (from a test, etc)
+    if (res && typeof res === "object" && "imageUrl" in res) return res.imageUrl;
+    if (res && res.data && "imageUrl" in res.data) return res.data.imageUrl;
+    throw new Error("Unexpected response from uploadImage");
+  });
+};
+
+
+export const addSongToPlaylist = async (
+  playlistId: string,
+  songId: string
+): Promise<any> => {
+  try {
+
+    // PATCH /playlist/add-songs/:id
+    const res = await API.patch(`/playlist/add-songs/${playlistId}`, {
+      songID: songId,
+    });
+    console.log(res)
+    return res;
+  } catch (error) {
+    throw error;
+  }
+};
+
