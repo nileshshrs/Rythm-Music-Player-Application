@@ -6,6 +6,7 @@ import Album from "./pages/Album"
 import Search from "./pages/Search"
 import Songs from "./pages/Songs"
 import Playlist from "./pages/Playlist"
+import Dashboard from "./pages/Dashboard"
 
 
 function App() {
@@ -13,7 +14,7 @@ function App() {
   return (
     <>
       <Routes>
-
+        <Route element={<Dashboard />} path="/dashboard" />
         <Route element={<Layout />}>
           <Route path="/" element={<Home />} />
           <Route path="/messages" element={<Chat />} />

@@ -1,4 +1,3 @@
-import { AxiosResponse } from "axios";
 import API from "./apiClient";
 import { AlbumResponse } from "@/utils/types";
 
@@ -104,11 +103,10 @@ export const addSongToPlaylist = async (
 ): Promise<any> => {
   try {
 
-    // PATCH /playlist/add-songs/:id
     const res = await API.patch(`/playlist/add-songs/${playlistId}`, {
       songID: songId,
     });
-    console.log(res)
+
     return res;
   } catch (error) {
     throw error;
