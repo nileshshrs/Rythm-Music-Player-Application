@@ -17,7 +17,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useUploadAudio } from "@/hooks/useAudio";
 import { useUploadImage } from "@/hooks/useImage";
 import type { Song } from "@/utils/types";
-import { useCreateSong, useSongs } from "@/hooks/useSongs";
+import { useCreateSong, useEditSong, useSongs } from "@/hooks/useSongs";
 import { useAlbums } from "@/hooks/useAlbums";
 import {
     Select,
@@ -45,11 +45,11 @@ type SongFormValues = z.infer<ReturnType<typeof getSongSchema>>;
 type SongDialogProps = {
     open: boolean;
     onOpenChange: (open: boolean) => void;
-    defaultValues?: Partial<SongFormValues>;
+    defaultValues?: Partial<SongFormValues> & { _id?: string }; // ADDED _id for edit
 };
 
 const SongDialog = ({ open, onOpenChange, defaultValues = {} }: SongDialogProps) => {
-    const isEditing = !!defaultValues.title;
+    const isEditing = !!defaultValues._id; // FIXED: use _id for edit detection
 
     const songImageRef = useRef<HTMLInputElement | null>(null);
     const artistImageRef = useRef<HTMLInputElement | null>(null);
@@ -214,16 +214,38 @@ const SongDialog = ({ open, onOpenChange, defaultValues = {} }: SongDialogProps)
     };
 
     const createSongMutation = useCreateSong();
+    const editSongMutation = useEditSong(); // ADDED
 
+    // REPLACED onSubmit with edit support
     const onSubmit = (data: SongFormValues) => {
-        const album = data.album === "no-album" ? "" : data.album!;
+        const album = data.album === "no-album" ? null : data.album!;
         const songData: Song = {
             ...data,
             album,
         };
-        createSongMutation.mutate(songData, {
-            onSuccess: () => refetch(),
-        });
+
+        if (isEditing && defaultValues._id) {
+            const { _id, ...updateData } = songData;
+            editSongMutation.mutate(
+                {
+                    id: defaultValues._id,
+                    data: updateData,
+                },
+                {
+                    onSuccess: () => {
+                        refetch();
+                        onOpenChange(false);
+                    },
+                }
+            );
+        } else {
+            createSongMutation.mutate(songData, {
+                onSuccess: () => {
+                    refetch();
+                    onOpenChange(false);
+                },
+            });
+        }
     };
 
     const renderError = (field: any) =>

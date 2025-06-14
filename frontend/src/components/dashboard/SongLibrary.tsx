@@ -3,7 +3,7 @@ import { Pencil, Trash2 } from "lucide-react";
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 import { useState } from "react";
 import SongDialog from "./SongDialog";
-import { useSongs } from "@/hooks/useSongs";
+import { useDeleteSong, useSongs } from "@/hooks/useSongs";
 import type { Song } from "@/utils/types";
 import { formatDuration } from "@/utils/formatDuration";
 
@@ -13,7 +13,9 @@ const SongLibrary = () => {
   const [open, setOpen] = useState(false);
   const [editingSong, setEditingSong] = useState<Song | null>(null);
 
-  const { songs, isLoading } = useSongs();
+  const { songs, isLoading, refetch } = useSongs();
+
+  const deleteSongMutation = useDeleteSong();
 
   const handleAddSong = () => {
     setEditingSong(null);
@@ -23,6 +25,17 @@ const SongLibrary = () => {
   const handleEditSong = (song: Song) => {
     setEditingSong(song);
     setOpen(true);
+  };
+
+  const handleDeleteSong = (songId: string) => {
+    deleteSongMutation.mutate(songId, {
+      onSuccess: () => {
+        refetch();
+      },
+      onError: (error) => {
+        console.error("Failed to delete song:", error);
+      },
+    });
   };
 
   if (isLoading) {
@@ -39,9 +52,7 @@ const SongLibrary = () => {
       <div className="grid grid-cols-[40px_2fr_2fr_1fr_1fr] items-start">
         <div className="col-span-4">
           <h2 className="text-xl font-bold">Song Library</h2>
-          <p className="text-sm text-zinc-400 mt-1">
-            Manage your music tracks
-          </p>
+          <p className="text-sm text-zinc-400 mt-1">Manage your music tracks</p>
         </div>
         <div className="flex justify-end">
           <Button
@@ -68,7 +79,7 @@ const SongLibrary = () => {
           {/* Scrollable song list */}
           <ScrollArea className="h-[400px] w-full px-3">
             <div className="space-y-2">
-              {(songs && songs.length > 0) ? (
+              {songs && songs.length > 0 ? (
                 songs.map((song: Song, index: number) => (
                   <div
                     key={song._id || `${song.title}-${index}`}
@@ -110,7 +121,10 @@ const SongLibrary = () => {
                         onClick={() => handleEditSong(song)}
                         className="w-4 h-4 cursor-pointer text-blue-400 hover:text-blue-500"
                       />
-                      <Trash2 className="w-4 h-4 cursor-pointer text-red-500 hover:text-red-600" />
+                      <Trash2
+                        onClick={() => handleDeleteSong(song._id!)}
+                        className="w-4 h-4 cursor-pointer text-red-500 hover:text-red-600"
+                      />
                     </div>
                   </div>
                 ))
@@ -129,7 +143,14 @@ const SongLibrary = () => {
       <SongDialog
         open={open}
         onOpenChange={setOpen}
-        defaultValues={editingSong || undefined}
+        defaultValues={
+          editingSong
+            ? {
+                ...editingSong,
+                album: editingSong.album ?? undefined, // converts null to undefined
+              }
+            : undefined
+        }
       />
     </div>
   );

@@ -69,3 +69,41 @@ export const getSongsByIDController = catchErrors(
   }
 );
 
+
+export const editSongController = catchErrors(async (req, res) => {
+  const { id } = req.params;
+  const updateData = req.body;
+
+  const song = await SongModel.findById(id);
+  appAssert(song, NOT_FOUND, "Song not found");
+
+  // Only update provided fields
+  if (updateData.title !== undefined) song.title = updateData.title;
+  if (updateData.album !== undefined) song.album = updateData.album || null;
+  if (updateData.artist !== undefined) song.artist = updateData.artist;
+  if (updateData.artistImage !== undefined) song.artistImage = updateData.artistImage;
+  if (updateData.songImage !== undefined) song.songImage = updateData.songImage;
+  if (updateData.audioUrl !== undefined) song.audioUrl = updateData.audioUrl;
+  if (updateData.duration !== undefined) song.duration = updateData.duration;
+
+  await song.save();
+
+  return res.status(OK).json({
+    message: "Song updated successfully",
+    song,
+  });
+});
+
+export const deleteSongController = catchErrors(async (req, res) => {
+  const { id } = req.params;
+
+  const song = await SongModel.findById(id);
+  appAssert(song, NOT_FOUND, "Song not found");
+
+  await song.deleteOne();
+
+  return res.status(OK).json({
+    message: "Song deleted successfully",
+    song, // Optionally include deleted song info
+  });
+});

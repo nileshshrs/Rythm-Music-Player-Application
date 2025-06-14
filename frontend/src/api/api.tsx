@@ -136,3 +136,24 @@ export const createSong = async (data: Song) => {
     return API.post("/songs/create", data);
 
 };
+
+
+export const editSong = async (songId: string, data: Partial<Song>): Promise<any> => {
+  try {
+    const res = await API.patch(`/songs/${songId}`, data);
+    return res;
+  } catch (error) {
+    throw error;
+  }
+};
+
+export const deleteSong = async (songId: string): Promise<any> => {
+  try {
+    const res = await API.delete(`/songs/${songId}`);
+    return res.data;
+  } catch (error) {
+    throw error;
+  }
+};
+
+

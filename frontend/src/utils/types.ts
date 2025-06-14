@@ -22,7 +22,7 @@ export type Song = {
     audioUrl: string;
     duration: number; // seconds
     songImage?: string;
-    album?: string; // album ID
+    album?: string | null; // album ID
     albumTitle?: string; // album title for display
     themeColor?: string; // color for UI theming
 };

@@ -1,5 +1,5 @@
 import { useMutation, useQuery } from "@tanstack/react-query";
-import { createSong, getAllSongs } from "@/api/api";
+import { createSong, deleteSong, editSong, getAllSongs } from "@/api/api";
 import { getSongsByID } from "@/api/api";
 import { Song } from "@/utils/types";
 
@@ -53,3 +53,15 @@ export const useCreateSong = () => {
   });
 };
 
+export const useEditSong = () => {
+  return useMutation({
+    mutationFn: ({ id, data }: { id: string; data: Partial<Song> }) =>
+      editSong(id, data),
+  });
+};
+
+export const useDeleteSong = () => {
+  return useMutation({
+    mutationFn: (id: string) => deleteSong(id),
+  });
+};
