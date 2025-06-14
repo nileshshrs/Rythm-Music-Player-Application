@@ -150,11 +150,11 @@ const Player = () => {
                 <Repeat className="h-4 w-4" />
               </Button>
             </div>
-            {currentSong && (
+   
               <div className="block lg:hidden text-white text-sm font-medium truncate text-center w-full px-4">
-                {currentSong.title} <span className="text-zinc-400">  —  </span> {currentSong.artist}
+                {currentSong?.title || "No song playing"} <span className="text-zinc-400">  —  </span> {currentSong?.artist ||"Unknown artist"}
               </div>
-            )}
+     
 
             {/* Progress Bar */}
             <div className="flex items-center gap-2 w-full">

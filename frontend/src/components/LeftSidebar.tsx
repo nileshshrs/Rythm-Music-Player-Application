@@ -108,7 +108,7 @@ const LeftSidebar = () => {
           </p>
         )}
 
-        <ScrollArea className="h-[calc(100vh-300px)] overflow-y-auto pr-1">
+        <ScrollArea className="h-[calc(70vh-300px)] overflow-y-auto pr-1">
           <div className="space-y-1.5">
             {isLoading ? (
               <PlaylistSkeleton />

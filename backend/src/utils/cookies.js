@@ -1,10 +1,11 @@
 import { fifteenDaysFromNow, fifteenMinutesFromNow } from "./date.js";
 
-export const refresh_path = "/api/v1/auth/refresh"
+export const refresh_path = "/api/v1/auth/refresh";
+
 const defaults = {
     sameSite: "none",
     httpOnly: true,
-    secure: true, // Set to true in production
+    secure: true,
 };
 
 export const getAccessTokenCookieOptions = () => ({
@@ -15,9 +16,8 @@ export const getAccessTokenCookieOptions = () => ({
 export const getRefreshTokenCookieOptions = () => ({
     ...defaults,
     expires: fifteenDaysFromNow(),
-    path: refresh_path,  // "/auth/refresh"
+    path: refresh_path,
 });
-
 
 export const setAuthCookies = (res, accessToken, refreshToken) => {
     return res
@@ -25,10 +25,8 @@ export const setAuthCookies = (res, accessToken, refreshToken) => {
         .cookie("refresh_token", refreshToken, getRefreshTokenCookieOptions());
 };
 
-
-export const clearAuthCookies = (res,) =>
-    res
-        .clearCookie("access_token")
-        .clearCookie("refresh_token", {
-            path: refresh_path,
-        })
+export const clearAuthCookies = (res) => {
+    return res
+        .clearCookie("access_token", getAccessTokenCookieOptions())
+        .clearCookie("refresh_token", getRefreshTokenCookieOptions());
+};
