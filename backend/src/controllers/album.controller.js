@@ -28,10 +28,31 @@ export const createAlbumController = catchErrors(
 
 export const getAllAlbumsController = catchErrors(
     async (req, res) => {
-        const albums = await AlbumModel.find().sort({ createdAt: -1 }).lean();
+        const albums = await AlbumModel.aggregate([
+            { $sort: { createdAt: -1 } },
+            {
+                $lookup: {
+                    from: "songs", // must match your songs collection name
+                    localField: "_id",
+                    foreignField: "album",
+                    as: "songs"
+                }
+            },
+            {
+                $addFields: {
+                    totalSongs: { $size: "$songs" }
+                }
+            },
+            {
+                $project: {
+                    songs: 0 // remove songs array from output
+                }
+            }
+        ]);
         return res.status(OK).json(albums);
     }
 );
+
 
 export const getAlbumByIDController = catchErrors(
     async (req, res) => {
@@ -49,3 +70,56 @@ export const getAlbumByIDController = catchErrors(
         });
     }
 )
+
+export const deleteAlbumController = catchErrors(
+    async (req, res) => {
+        const { id } = req.params;
+
+        // Delete the album
+        const album = await AlbumModel.findByIdAndDelete(id).lean();
+        appAssert(album, NOT_FOUND, "Album not found");
+
+        // Unlink songs by setting their album field to null
+        await SongModel.updateMany(
+            { album: id },
+            { $set: { album: null } }
+        );
+
+        return res.status(OK).json({
+            message: "Album deleted successfully and all related songs unlinked.",
+            album,
+        });
+    }
+);
+
+// Edit Album Controller (PATCH /album/update/:id)
+export const editAlbumController = catchErrors(
+    async (req, res) => {
+        const { id } = req.params;
+        const updates = req.body;
+
+        // Find and update
+        const album = await AlbumModel.findByIdAndUpdate(
+            id,
+            {
+                $set: {
+                    title: updates.title,
+                    artist: updates.artist,
+                    artistImage: updates.artistImage || "",
+                    coverImage: updates.coverImage || "",
+                    genre: updates.genre || "",
+                    themeColor: updates.themeColor || "#000000",
+                    releaseDate: updates.releaseDate,
+                }
+            },
+            { new: true, lean: true }
+        );
+
+        appAssert(album, NOT_FOUND, "Album not found");
+
+        return res.status(OK).json({
+            message: "Album updated successfully",
+            album,
+        });
+    }
+);

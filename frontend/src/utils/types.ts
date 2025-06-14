@@ -9,6 +9,7 @@ export type Album = {
     releaseDate?: string; // ISO format (use Date if parsing later)
     genre?: string;
     themeColor: string;
+    totalSongs?: number; // added for fast lookup/count
 };
 
 

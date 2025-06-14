@@ -1,5 +1,5 @@
 import API from "./apiClient";
-import { AlbumResponse, Song } from "@/utils/types";
+import { Album, AlbumResponse, Song } from "@/utils/types";
 
 export const getAlbumsByID = async (id: string): Promise<AlbumResponse> => {
   try {
@@ -156,4 +156,30 @@ export const deleteSong = async (songId: string): Promise<any> => {
   }
 };
 
+export const createAlbum = async (data: Album ): Promise<any> => {
+  return await API.post("/album/create", data);
+};
 
+
+// EDIT album (PATCH /album/update/:id)
+export const editAlbum = async (
+  albumId: string,
+  data: Partial<Album>
+): Promise<any> => {
+  try {
+    const res = await API.patch(`/album/update/${albumId}`, data);
+    return res;
+  } catch (error) {
+    throw error;
+  }
+};
+
+// DELETE album (DELETE /album/delete/:id)
+export const deleteAlbum = async (albumId: string): Promise<any> => {
+  try {
+    const res = await API.delete(`/album/delete/${albumId}`);
+    return res;
+  } catch (error) {
+    throw error;
+  }
+};
