@@ -42,7 +42,7 @@ const Topbar = () => {
       {/* Right Controls */}
       <div className="flex items-center gap-4">
         <Link
-          to="/admin"
+          to="/dashboard"
           className={cn(
             buttonVariants({ variant: "ghost" }),
             "h-9 px-4 rounded-md bg-zinc-800 text-zinc-200 border border-zinc-700 transition-colors duration-150 hover:bg-zinc-700 hover:text-white"

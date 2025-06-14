@@ -27,11 +27,15 @@ export const uploadAudioController = catchErrors(
 
         appAssert(file, BAD_REQUEST, "No audio file uploaded.");
 
-        // Step 1: Extract duration
-        const metadata = await parseBuffer(file.buffer, file.mimetype);
-        const durationInSeconds = Math.floor(metadata.format.duration || 0);
+        let durationInSeconds = 0;
+        try {
+            const metadata = await parseBuffer(file.buffer, file.mimetype);
+            durationInSeconds = Math.floor(metadata.format.duration || 0);
+        } catch (err) {
+            console.error("Could not parse audio duration:", err);
+            // Fail silently if duration can't be parsed
+        }
 
-        // Step 2: Upload to Cloudinary using existing service
         const result = await uploadToCloudinary(file.buffer, "rhythm-player/audio", "video");
 
         return res.status(OK).json({

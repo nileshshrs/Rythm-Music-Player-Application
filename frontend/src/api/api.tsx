@@ -1,5 +1,5 @@
 import API from "./apiClient";
-import { AlbumResponse } from "@/utils/types";
+import { AlbumResponse, Song } from "@/utils/types";
 
 export const getAlbumsByID = async (id: string): Promise<AlbumResponse> => {
   try {
@@ -113,3 +113,26 @@ export const addSongToPlaylist = async (
   }
 };
 
+export const uploadSong = (audioFile: File) => {
+    const formData = new FormData();
+    formData.append("audio", audioFile);
+
+    return API.post("/upload/audio", formData, {
+        headers: { "Content-Type": "multipart/form-data" }
+    }).then((res: any) => {
+        // Defensive: handle both cases (interceptor hit or miss)
+        if (res && typeof res === "object" && "audioUrl" in res && "duration" in res) {
+            return res; // API returned only data (interceptor hit)
+        }
+        if (res && res.data && "audioUrl" in res.data && "duration" in res.data) {
+            return res.data; // AxiosResponse (no interceptor)
+        }
+        throw new Error("Unexpected response from uploadSong");
+    });
+};
+
+
+export const createSong = async (data: Song) => {
+    return API.post("/songs/create", data);
+
+};

@@ -3,47 +3,35 @@ import { Pencil, Trash2 } from "lucide-react";
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 import { useState } from "react";
 import SongDialog from "./SongDialog";
+import { useSongs } from "@/hooks/useSongs";
+import type { Song } from "@/utils/types";
+import { formatDuration } from "@/utils/formatDuration";
 
-const songs = [
-  {
-    id: 1,
-    title: "Inner Light",
-    artist: "Shocking Lemon",
-    album: "Voltage",
-    duration: 225,
-    image: "/Note.jpg",
-  },
-  {
-    id: 2,
-    title: "Lost in Tokyo",
-    artist: "Electric Dreams",
-    album: "Neon Nights",
-    duration: 343,
-    image: "/Note.jpg",
-  },
-  {
-    id: 3,
-    title: "Tokyo Drift Symphony Extended Remix",
-    artist: "Electric Dreams and more",
-    album: "Neon Nights Very Long Album Title",
-    duration: 381,
-    image: "/Note.jpg",
-  },
-];
+const fallbackImg = "/Note.jpg";
 
 const SongLibrary = () => {
   const [open, setOpen] = useState(false);
-  const [editingSong, setEditingSong] = useState<any | null>(null);
+  const [editingSong, setEditingSong] = useState<Song | null>(null);
+
+  const { songs, isLoading } = useSongs();
 
   const handleAddSong = () => {
     setEditingSong(null);
     setOpen(true);
   };
 
-  const handleEditSong = (song: any) => {
+  const handleEditSong = (song: Song) => {
     setEditingSong(song);
     setOpen(true);
   };
+
+  if (isLoading) {
+    return (
+      <div className="w-full flex items-center justify-center h-48">
+        <span className="text-zinc-400">Loading songs...</span>
+      </div>
+    );
+  }
 
   return (
     <div className="w-full space-y-4 mx-auto">
@@ -80,49 +68,57 @@ const SongLibrary = () => {
           {/* Scrollable song list */}
           <ScrollArea className="h-[400px] w-full px-3">
             <div className="space-y-2">
-              {songs.map((song, index) => (
-                <div
-                  key={song.id}
-                  className="grid grid-cols-[40px_2fr_2fr_1fr_1fr] items-center border-b border-zinc-900 py-3 text-sm"
-                >
-                  <div className="text-zinc-400">
-                    {String(index + 1).padStart(2, "0")}
-                  </div>
+              {(songs && songs.length > 0) ? (
+                songs.map((song: Song, index: number) => (
+                  <div
+                    key={song._id || `${song.title}-${index}`}
+                    className="grid grid-cols-[40px_2fr_2fr_1fr_1fr] items-center border-b border-zinc-900 py-3 text-sm"
+                  >
+                    <div className="text-zinc-400">
+                      {String(index + 1).padStart(2, "0")}
+                    </div>
 
-                  <div className="flex items-center gap-3 overflow-hidden">
-                    <img
-                      src={song.image}
-                      alt={song.title}
-                      className="w-10 h-10 rounded object-cover shrink-0"
-                    />
-                    <div className="flex flex-col overflow-hidden">
-                      <span className="font-bold text-white truncate">
-                        {song.title}
-                      </span>
-                      <span className="text-xs text-zinc-400 truncate">
-                        {song.artist}
-                      </span>
+                    <div className="flex items-center gap-3 overflow-hidden">
+                      <img
+                        src={song.songImage || fallbackImg}
+                        alt={song.title}
+                        className="w-10 h-10 rounded object-cover shrink-0"
+                      />
+                      <div className="flex flex-col overflow-hidden">
+                        <span className="font-bold text-white truncate">
+                          {song.title}
+                        </span>
+                        <span className="text-xs text-zinc-400 truncate">
+                          {song.artist}
+                        </span>
+                      </div>
+                    </div>
+
+                    <div className="text-zinc-300 truncate font-semibold">
+                      {song.albumTitle?.trim()
+                        ? song.albumTitle
+                        : song.album?.trim()
+                        ? song.album
+                        : "No album"}
+                    </div>
+                    <div className="text-zinc-300 text-center font-semibold">
+                      {song.duration ? formatDuration(song.duration) : "--:--"}
+                    </div>
+
+                    <div className="flex gap-3 justify-end">
+                      <Pencil
+                        onClick={() => handleEditSong(song)}
+                        className="w-4 h-4 cursor-pointer text-blue-400 hover:text-blue-500"
+                      />
+                      <Trash2 className="w-4 h-4 cursor-pointer text-red-500 hover:text-red-600" />
                     </div>
                   </div>
-
-                  <div className="text-zinc-300 truncate font-semibold">
-                    {song.album}
-                  </div>
-                  <div className="text-zinc-300 text-center font-semibold">
-                    {`${Math.floor(song.duration / 60)}:${String(
-                      song.duration % 60
-                    ).padStart(2, "0")}`}
-                  </div>
-
-                  <div className="flex gap-3 justify-end">
-                    <Pencil
-                      onClick={() => handleEditSong(song)}
-                      className="w-4 h-4 cursor-pointer text-blue-400 hover:text-blue-500"
-                    />
-                    <Trash2 className="w-4 h-4 cursor-pointer text-red-500 hover:text-red-600" />
-                  </div>
+                ))
+              ) : (
+                <div className="flex items-center justify-center h-40 text-zinc-400 col-span-5">
+                  No songs found.
                 </div>
-              ))}
+              )}
             </div>
           </ScrollArea>
         </div>

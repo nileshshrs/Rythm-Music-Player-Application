@@ -1,7 +1,7 @@
 // types/album.ts
 
 export type Album = {
-    _id: string;
+    _id?: string;
     title: string;
     artist: string;
     artistImage?: string;
@@ -15,7 +15,7 @@ export type Album = {
 // types/song.ts
 
 export type Song = {
-    _id: string;
+    _id?: string;
     title: string;
     artist: string;
     artistImage?: string;

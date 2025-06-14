@@ -3,6 +3,7 @@ import { Button } from "@/components/ui/button";
 import UserDropdown from "@/components/UserDropdown";
 import DashboardStats from "@/components/dashboard/DashboardStats";
 import DashboardLibrary from "@/components/dashboard/DashboardLibrary";
+import { Link } from "react-router-dom";
 
 const Dashboard: React.FC = () => {
     return (
@@ -14,25 +15,26 @@ const Dashboard: React.FC = () => {
                     <div className="flex items-center gap-6 min-w-fit">
                         {/* Logo + Titles */}
                         <div className="flex items-center gap-3">
-                            <svg
-                                className="w-12 h-12"
-                                viewBox="0 0 48 48"
-                                fill="none"
-                                aria-hidden="true"
-                            >
-                                <rect width="48" height="48" rx="10" fill="#14c75a" />
-                                <text
-                                    x="24"
-                                    y="34"
-                                    textAnchor="middle"
-                                    fontSize="30"
-                                    fontWeight="bold"
-                                    fill="#111827"
-                                    fontFamily="Arial, Helvetica, sans-serif"
+                            <Link to={"/"}>
+                                <svg
+                                    className="w-12 h-12"
+                                    viewBox="0 0 48 48"
+                                    fill="none"
+                                    aria-hidden="true"
                                 >
-                                    R
-                                </text>
-                            </svg>
+                                    <rect width="48" height="48" rx="10" fill="#14c75a" />
+                                    <text
+                                        x="24"
+                                        y="34"
+                                        textAnchor="middle"
+                                        fontSize="30"
+                                        fontWeight="bold"
+                                        fill="#111827"
+                                        fontFamily="Arial, Helvetica, sans-serif"
+                                    >
+                                        R
+                                    </text>
+                                </svg></Link>
                             <div className="hidden md:flex flex-col space-y-1">
                                 <div className="text-2xl font-bold leading-tight tracking-tight text-[#fefefe]">
                                     Music Manager
@@ -44,12 +46,14 @@ const Dashboard: React.FC = () => {
                         </div>
 
                         {/* HOME Button next to title */}
-                        <Button
-                            variant="secondary"
-                            className="rounded-lg px-6 py-2 text-base font-semibold bg-zinc-800 text-white shadow-none hover:bg-[#181d26] transition border border-[#1f2937] "
-                        >
-                            HOME
-                        </Button>
+                        <Link to={"/"}>
+                            <Button
+                                variant="secondary"
+                                className="rounded-lg px-6 py-2 text-base font-semibold bg-zinc-800 text-white shadow-none hover:bg-[#181d26] transition border border-[#1f2937] "
+                            >
+                                HOME
+                            </Button>
+                        </Link>
                     </div>
 
                     {/* RIGHT: Avatar */}

@@ -1,6 +1,7 @@
-import { useQuery } from "@tanstack/react-query";
-import { getAllSongs } from "@/api/api";
+import { useMutation, useQuery } from "@tanstack/react-query";
+import { createSong, getAllSongs } from "@/api/api";
 import { getSongsByID } from "@/api/api";
+import { Song } from "@/utils/types";
 
 export const useSongs = () => {
   const {
@@ -44,3 +45,11 @@ export const useSongByID = (id: string) => {
     refetch,
   };
 };
+
+
+export const useCreateSong = () => {
+  return useMutation({
+    mutationFn: (data: Song) => createSong(data),
+  });
+};
+
