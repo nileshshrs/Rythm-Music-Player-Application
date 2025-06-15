@@ -6,6 +6,7 @@ import SongDialog from "./SongDialog";
 import { useDeleteSong, useSongs } from "@/hooks/useSongs";
 import type { Song } from "@/utils/types";
 import { formatDuration } from "@/utils/formatDuration";
+import Loader from "../Loader";
 
 const fallbackImg = "/Note.jpg";
 
@@ -38,13 +39,7 @@ const SongLibrary = () => {
     });
   };
 
-  if (isLoading) {
-    return (
-      <div className="w-full flex items-center justify-center h-48">
-        <span className="text-zinc-400">Loading songs...</span>
-      </div>
-    );
-  }
+
 
   return (
     <div className="w-full space-y-4 mx-auto">
@@ -79,7 +74,12 @@ const SongLibrary = () => {
           {/* Scrollable song list */}
           <ScrollArea className="h-[400px] w-full px-3">
             <div className="space-y-2">
-              {songs && songs.length > 0 ? (
+
+              {isLoading ? (
+                <div className="flex items-center justify-center h-40">
+                  <Loader />
+                </div>
+              ) : songs && songs.length > 0 ? (
                 songs.map((song: Song, index: number) => (
                   <div
                     key={song._id || `${song.title}-${index}`}
@@ -96,9 +96,7 @@ const SongLibrary = () => {
                         className="w-10 h-10 rounded object-cover shrink-0"
                       />
                       <div className="flex flex-col overflow-hidden">
-                        <span className="font-bold text-white truncate">
-                          {song.title}
-                        </span>
+                        <span className="font-bold text-white truncate">{song.title}</span>
                         <span className="text-xs text-zinc-400 truncate">
                           {song.artist}
                         </span>
@@ -109,8 +107,8 @@ const SongLibrary = () => {
                       {song.albumTitle?.trim()
                         ? song.albumTitle
                         : song.album?.trim()
-                        ? song.album
-                        : "No album"}
+                          ? song.album
+                          : "No album"}
                     </div>
                     <div className="text-zinc-300 text-center font-semibold">
                       {song.duration ? formatDuration(song.duration) : "--:--"}
@@ -146,9 +144,9 @@ const SongLibrary = () => {
         defaultValues={
           editingSong
             ? {
-                ...editingSong,
-                album: editingSong.album ?? undefined, // converts null to undefined
-              }
+              ...editingSong,
+              album: editingSong.album ?? undefined, // converts null to undefined
+            }
             : undefined
         }
       />

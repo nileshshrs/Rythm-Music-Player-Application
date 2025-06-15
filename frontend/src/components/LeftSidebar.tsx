@@ -30,6 +30,22 @@ const LeftSidebar = () => {
               buttonVariants({
                 variant: "ghost",
                 className:
+                  "w-full flex items-center text-white/90 hover:text-white hover:bg-zinc-900 @[130px]:justify-start justify-center px-1",
+              })
+            )}
+          >
+            <img src="/logo.png" alt="" className="w-9 h-9" />
+            <span className="hidden @[130px]:inline text-[13px] sm:text-[1rem] font-bold tracking-tight leading-none">
+              RHYTHM
+            </span>
+          </Link>
+
+          <Link
+            to="/"
+            className={cn(
+              buttonVariants({
+                variant: "ghost",
+                className:
                   "w-full flex items-center text-white/90 hover:text-white hover:bg-zinc-800 @[130px]:justify-start justify-center",
               })
             )}
@@ -144,7 +160,7 @@ const LeftSidebar = () => {
           </div>
         </ScrollArea>
       </div>
-    </div>
+    </div >
   );
 };
 

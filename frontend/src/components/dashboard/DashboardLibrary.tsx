@@ -4,7 +4,6 @@ import {
     TabsTrigger,
     TabsContent,
 } from "@/components/ui/tabs";
-import { ScrollArea } from "@/components/ui/scroll-area";
 import SongLibrary from "./SongLibrary";
 import AlbumLibrary from "./AlbumLibrary";
 

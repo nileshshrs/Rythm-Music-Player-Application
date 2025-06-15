@@ -7,7 +7,7 @@ import { Link } from "react-router-dom";
 
 const Dashboard: React.FC = () => {
     return (
-        <div className="w-full h-full bg-[#0b0e13] text-[#fefefe] pt-10 px-6 pb-6">
+        <div className="w-full h-full min-h-screen bg-[#0b0e13] text-[#fefefe] pt-10 px-6 pb-6">
             <div className="w-full max-w-[1400px] mx-auto">
                 {/* Header Row */}
                 <div className="flex items-center justify-between mb-8">
@@ -16,25 +16,8 @@ const Dashboard: React.FC = () => {
                         {/* Logo + Titles */}
                         <div className="flex items-center gap-3">
                             <Link to={"/"}>
-                                <svg
-                                    className="w-12 h-12"
-                                    viewBox="0 0 48 48"
-                                    fill="none"
-                                    aria-hidden="true"
-                                >
-                                    <rect width="48" height="48" rx="10" fill="#14c75a" />
-                                    <text
-                                        x="24"
-                                        y="34"
-                                        textAnchor="middle"
-                                        fontSize="30"
-                                        fontWeight="bold"
-                                        fill="#111827"
-                                        fontFamily="Arial, Helvetica, sans-serif"
-                                    >
-                                        R
-                                    </text>
-                                </svg></Link>
+                                <img src="/logo.png" alt="" className="w-16 h-16 object-contain aspect-square" />
+                            </Link>
                             <div className="hidden md:flex flex-col space-y-1">
                                 <div className="text-2xl font-bold leading-tight tracking-tight text-[#fefefe]">
                                     Music Manager

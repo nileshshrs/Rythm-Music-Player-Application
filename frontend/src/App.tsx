@@ -7,6 +7,8 @@ import Search from "./pages/Search"
 import Songs from "./pages/Songs"
 import Playlist from "./pages/Playlist"
 import Dashboard from "./pages/Dashboard"
+import Login from "./pages/Login"
+import Register from "./pages/Register"
 
 
 function App() {
@@ -15,6 +17,9 @@ function App() {
     <>
       <Routes>
         <Route element={<Dashboard />} path="/dashboard" />
+        <Route element={<Login />} path="/sign-in" />
+        <Route element={<Register />} path="/sign-up" />
+
         <Route element={<Layout />}>
           <Route path="/" element={<Home />} />
           <Route path="/messages" element={<Chat />} />

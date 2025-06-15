@@ -5,6 +5,7 @@ import AlbumDialog from "./AlbumDialog";
 import { useState } from "react";
 import { useAlbums, useDeleteAlbum } from "@/hooks/useAlbums";
 import type { Album } from "@/utils/types";
+import Loader from "../Loader";
 
 const fallbackImg = "/Note.jpg";
 
@@ -32,6 +33,8 @@ const AlbumLibrary = () => {
             },
         });
     };
+
+
 
     return (
         <div className="w-full space-y-4 mx-auto">
@@ -65,7 +68,7 @@ const AlbumLibrary = () => {
                         <div className="space-y-2">
                             {isLoading ? (
                                 <div className="flex items-center justify-center h-40 text-zinc-400 col-span-5">
-                                    Loading albums...
+                                    <Loader />
                                 </div>
                             ) : albums && albums.length > 0 ? (
                                 albums.map((album: Album, index: number) => (
