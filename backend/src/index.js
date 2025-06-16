@@ -30,10 +30,10 @@ app.use(cookieParser());
 
 app.use("/api/v1/auth", authRoutes)
 app.use("/api/v1/user", authenticate, userRoutes)
-app.use("/api/v1/album",  albumRoutes) // Ensure albumRoutes is imported correctly
-app.use("/api/v1/upload", uploadRoutes) // Ensure userRoutes is imported correctly
+app.use("/api/v1/album", albumRoutes) // Ensure albumRoutes is imported correctly
+app.use("/api/v1/upload", authenticate, uploadRoutes) // Ensure userRoutes is imported correctly
 app.use("/api/v1/songs", songRoutes) // Ensure albumRoutes is imported correctly
-app.use("/api/v1/playlist", authenticate,  playlistRoutes)
+app.use("/api/v1/playlist", authenticate, playlistRoutes)
 
 app.use(error)
 

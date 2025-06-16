@@ -5,8 +5,23 @@ import { useSongs } from "@/hooks/useSongs";
 import { formatDuration } from "@/utils/formatDuration";
 import { Album, Song } from "@/utils/types";
 import EmptyResult from "./EmptyResult";
+import { useAuth } from "@/context/AuthContext";
+import { useMusicContext } from "@/context/MusicContext";
+import Onboarding from "@/components/Onboarding";
 
 const Search = () => {
+  const { isAuthenticated } = useAuth()
+  const [onboardingOpen, setOnboardingOpen] = useState(false);
+  const { playSingle } = useMusicContext(); // Get the playSingle function
+
+  const openOnboarding = () => setOnboardingOpen(true);
+  const handlePlay = (song: Song) => {
+    if (!isAuthenticated) {
+      openOnboarding(); // <--- just call the prop
+      return;
+    }
+    playSingle(song);
+  };
   const location = useLocation();
   const query = new URLSearchParams(location.search).get("q")?.toLowerCase().trim() || "";
 
@@ -64,7 +79,7 @@ const Search = () => {
                         alt={song.title}
                         className="w-12 h-12 rounded-md object-cover"
                       />
-                      <button className="absolute -bottom-1.5 -right-1.5 w-6 h-6 bg-[#1DB954] rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 shadow-md">
+                      <button className="absolute -bottom-1.5 -right-1.5 w-6 h-6 bg-[#1DB954] rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 shadow-md" onClick={() => handlePlay(song)}>
                         <svg
                           xmlns="http://www.w3.org/2000/svg"
                           viewBox="0 0 24 24"
@@ -111,16 +126,7 @@ const Search = () => {
                         alt={album.title}
                         className="w-full aspect-square object-cover rounded-md mb-4"
                       />
-                      <button className="absolute bottom-2 right-2 w-8 h-8 bg-[#1DB954] rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 shadow-md">
-                        <svg
-                          xmlns="http://www.w3.org/2000/svg"
-                          viewBox="0 0 24 24"
-                          fill="currentColor"
-                          className="w-4 h-4 text-black"
-                        >
-                          <path d="M5 3v18l15-9L5 3z" />
-                        </svg>
-                      </button>
+
                     </div>
                     <h3 className="text-white font-semibold text-sm truncate">{album.title}</h3>
                     <p className="text-zinc-400 text-xs truncate">{album.artist}</p>
@@ -131,6 +137,7 @@ const Search = () => {
           )}
         </div>
       )}
+      <Onboarding open={onboardingOpen} onOpenChange={setOnboardingOpen} />
     </div>
   );
 };

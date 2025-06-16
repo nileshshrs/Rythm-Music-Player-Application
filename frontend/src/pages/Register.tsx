@@ -219,7 +219,7 @@ const Register = () => {
                 <div className="text-zinc-500 text-sm">
                     Already have an account?{" "}
                     <a
-                        href="#"
+                        href="/sign-in"
                         className="text-white underline font-medium hover:text-green-500"
                         tabIndex={0}
                     >

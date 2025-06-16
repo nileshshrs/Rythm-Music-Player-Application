@@ -11,13 +11,29 @@ import { formatDuration } from "@/utils/formatDuration";
 import { useSongByID } from "@/hooks/useSongs";
 import Loader from "@/components/Loader";
 import { useAddSongToPlaylist, useUserPlaylists } from "@/hooks/usePlaylist";
+import { useMusicContext } from "@/context/MusicContext"; // Add this line
+import { useAuth } from "@/context/AuthContext";
+import { useState } from "react";
+import { Song } from "@/utils/types";
+import Onboarding from "@/components/Onboarding";
 
 const Songs = () => {
   const { id } = useParams<{ id: string }>();
   const { song, isLoading, isError } = useSongByID(id || "");
   const { playlists } = useUserPlaylists();
   const addSongToPlaylistMutation = useAddSongToPlaylist();
+  const { isAuthenticated } = useAuth()
+  const [onboardingOpen, setOnboardingOpen] = useState(false);
+  const { playSingle } = useMusicContext(); // Get the playSingle function
 
+  const openOnboarding = () => setOnboardingOpen(true);
+  const handlePlay = (song: Song) => {
+    if (!isAuthenticated) {
+      openOnboarding(); // <--- just call the prop
+      return;
+    }
+    playSingle(song);
+  };
 
   if (isLoading) {
     return <Loader />;
@@ -68,7 +84,10 @@ const Songs = () => {
             </div>
 
             <div className="px-6 pb-4 flex gap-4 items-center justify-center md:justify-start">
-              <Button className="w-14 h-14 rounded-full bg-green-500 hover:bg-green-400 transition duration-200 transform hover:scale-105 flex items-center justify-center p-0">
+              <Button
+                className="w-14 h-14 rounded-full bg-green-500 hover:bg-green-400 transition duration-200 transform hover:scale-105 flex items-center justify-center p-0"
+                onClick={() => handlePlay(song)} // <<-- Add this
+              >
                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="#111827" className="w-8 h-8">
                   <path d="M5 3v18l15-9L5 3z" />
                 </svg>
@@ -157,6 +176,7 @@ const Songs = () => {
           </div>
         </div>
       </ScrollArea>
+      <Onboarding open={onboardingOpen} onOpenChange={setOnboardingOpen} />
     </div>
   );
 };

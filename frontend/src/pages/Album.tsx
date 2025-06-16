@@ -4,19 +4,39 @@ import { useAlbum } from "@/hooks/useAlbums";
 import { formatDuration } from "@/utils/formatDuration";
 import { Clock, Plus, Shuffle } from "lucide-react";
 import { useParams, Link } from "react-router-dom";
-import React from "react";
+import React, { useState } from "react";
 import { Song } from "@/utils/types";
 import { useMusicContext } from "@/context/MusicContext";
 import Loader from "@/components/Loader";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { useCreatePlaylistFromAlbum } from "@/hooks/usePlaylist";
+import { useAuth } from "@/context/AuthContext";
+import Onboarding from "@/components/Onboarding";
 
 const Album = () => {
+  const { isAuthenticated } = useAuth()
   const { playSingle, playAlbum, currentSong } = useMusicContext();
   const { id } = useParams();
   const { album, songs, isLoading } = useAlbum(id);
   const { mutate: createPlaylistFromAlbum } = useCreatePlaylistFromAlbum(id);
 
+  const [onboardingOpen, setOnboardingOpen] = useState(false);
+
+  const openOnboarding = () => setOnboardingOpen(true);
+  const handlePlay = (song: Song) => {
+    if (!isAuthenticated) {
+      openOnboarding(); // <--- just call the prop
+      return;
+    }
+    playSingle(song);
+  };
+  const handlePlayAlbum = (songs: Song[], startIndex: number = 0) => {
+    if (!isAuthenticated) {
+      openOnboarding();
+      return;
+    }
+    playAlbum(songs, startIndex);
+  };
   if (isLoading) {
     return <Loader />;
   }
@@ -65,7 +85,7 @@ const Album = () => {
               <Button
                 onClick={() => {
                   if (songs && songs.length > 0) {
-                    playAlbum(songs);
+                    handlePlayAlbum(songs)
                   }
                 }}
                 className="w-14 h-14 rounded-full bg-green-500 hover:bg-green-400 shadow-xl transition duration-200 transform hover:scale-105 flex items-center justify-center p-0"
@@ -84,7 +104,7 @@ const Album = () => {
                 onClick={() => {
                   if (songs && songs.length > 1) {
                     const randomIndex = Math.floor(Math.random() * songs.length);
-                    playAlbum(songs, randomIndex);
+                    handlePlayAlbum(songs, randomIndex);
                   }
                 }}
                 className="w-10 h-10 mt-[2px] rounded-full bg-zinc-700 hover:bg-zinc-600 shadow-xl transition duration-200 transform hover:scale-105 flex items-center justify-center p-0"
@@ -153,7 +173,7 @@ const Album = () => {
                               <span className="group-hover:hidden block">{index + 1}</span>
                               <span
                                 className="hidden group-hover:flex pl-1.5 cursor-pointer"
-                                onClick={() => playSingle(song)}
+                                onClick={() => handlePlay(song)}
                               >
                                 <svg
                                   xmlns="http://www.w3.org/2000/svg"
@@ -198,7 +218,7 @@ const Album = () => {
                               <span className="group-hover:hidden block">{index + 1}</span>
                               <span
                                 className="hidden group-hover:flex pl-1.5 cursor-pointer"
-                                onClick={() => playSingle(song)}
+                                onClick={() => handlePlay(song)}
                               >
                                 <svg
                                   xmlns="http://www.w3.org/2000/svg"
@@ -234,6 +254,8 @@ const Album = () => {
           </div>
         </div>
       </ScrollArea>
+      <Onboarding open={onboardingOpen} onOpenChange={setOnboardingOpen} />
+
     </div>
   );
 };
