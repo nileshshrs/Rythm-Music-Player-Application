@@ -5,11 +5,13 @@ import { Link } from "react-router-dom";
 import { buttonVariants } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import UserDropdown from "./UserDropdown";
+import { useAuth } from "@/context/AuthContext";
 
 const Topbar = () => {
   const [query, setQuery] = useState("");
   const navigate = useNavigate();
   const location = useLocation();
+  const { user } = useAuth()
 
   useEffect(() => {
     const trimmed = query.trim();
@@ -41,7 +43,7 @@ const Topbar = () => {
 
       {/* Right Controls */}
       <div className="flex items-center gap-4">
-        <Link
+        {user && user?.role === "admin" && <Link
           to="/dashboard"
           className={cn(
             buttonVariants({ variant: "ghost" }),
@@ -50,7 +52,7 @@ const Topbar = () => {
         >
           <LayoutDashboardIcon className="size-4 mr-2" />
           Dashboard
-        </Link>
+        </Link>}
 
         <UserDropdown />
       </div>

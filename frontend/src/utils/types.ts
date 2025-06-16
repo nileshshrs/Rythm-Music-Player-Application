@@ -35,13 +35,42 @@ export interface AlbumResponse {
 
 
 export type Playlist = {
-  _id: string;
-  name: string;
-  coverImage?: string;
-  description?: string;
-  songs: Song[];
-  themeColor: string;
-  createdAt: string; // ISO string, parse as Date if needed
-  updatedAt: string; // ISO string
-  username: string;
+    _id: string;
+    name: string;
+    coverImage?: string;
+    description?: string;
+    songs: Song[];
+    themeColor: string;
+    createdAt: string; // ISO string, parse as Date if needed
+    updatedAt: string; // ISO string
+    username: string;
+};
+
+// --- User Type ---
+export type User = {
+    _id: string;
+    email: string;
+    username: string;
+    role?: string;
+    // Add more user fields here if you need
+};
+
+// --- Login Types ---
+export type LoginRequest = {
+    usernameOrEmail: string;
+    password: string;
+};
+
+export type LoginResponse = {
+    message: string;
+    user: User;
+};
+
+// --- AuthContext Shape ---
+export type AuthContextType = {
+    user: User | null;
+    login: (data: LoginRequest) => Promise<void>;
+    logout: () => void;
+    isAuthenticated: boolean;
+    setUser: (user: User | null) => void;
 };

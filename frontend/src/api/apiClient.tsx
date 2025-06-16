@@ -31,11 +31,12 @@ API.interceptors.response.use(
 
         if (status === 401 && data?.errorCode === "InvalidAccessToken") {
             try {
-                await TokenRefreshClient.get("/auth/refresh")
+                await TokenRefreshClient.post("/auth/refresh")
                 return TokenRefreshClient(config)
             } catch (err) {
                 localStorage.removeItem("user")
-                navigate("/sign-in")
+                window.location.reload();
+                navigate("/sign-in", { replace: true })
                 queryClient.clear();
                 throw new Error("Token refresh failed")
             }

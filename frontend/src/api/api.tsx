@@ -114,26 +114,26 @@ export const addSongToPlaylist = async (
 };
 
 export const uploadSong = (audioFile: File) => {
-    const formData = new FormData();
-    formData.append("audio", audioFile);
+  const formData = new FormData();
+  formData.append("audio", audioFile);
 
-    return API.post("/upload/audio", formData, {
-        headers: { "Content-Type": "multipart/form-data" }
-    }).then((res: any) => {
-        // Defensive: handle both cases (interceptor hit or miss)
-        if (res && typeof res === "object" && "audioUrl" in res && "duration" in res) {
-            return res; // API returned only data (interceptor hit)
-        }
-        if (res && res.data && "audioUrl" in res.data && "duration" in res.data) {
-            return res.data; // AxiosResponse (no interceptor)
-        }
-        throw new Error("Unexpected response from uploadSong");
-    });
+  return API.post("/upload/audio", formData, {
+    headers: { "Content-Type": "multipart/form-data" }
+  }).then((res: any) => {
+    // Defensive: handle both cases (interceptor hit or miss)
+    if (res && typeof res === "object" && "audioUrl" in res && "duration" in res) {
+      return res; // API returned only data (interceptor hit)
+    }
+    if (res && res.data && "audioUrl" in res.data && "duration" in res.data) {
+      return res.data; // AxiosResponse (no interceptor)
+    }
+    throw new Error("Unexpected response from uploadSong");
+  });
 };
 
 
 export const createSong = async (data: Song) => {
-    return API.post("/songs/create", data);
+  return API.post("/songs/create", data);
 
 };
 
@@ -156,7 +156,7 @@ export const deleteSong = async (songId: string): Promise<any> => {
   }
 };
 
-export const createAlbum = async (data: Album ): Promise<any> => {
+export const createAlbum = async (data: Album): Promise<any> => {
   return await API.post("/album/create", data);
 };
 
@@ -182,4 +182,14 @@ export const deleteAlbum = async (albumId: string): Promise<any> => {
   } catch (error) {
     throw error;
   }
+};
+
+export const getCurrentUser = async (): Promise<any> => {
+  const res = await API.get("/user/get");
+  return res
+};
+
+
+export const logout = async (): Promise<any> => {
+  return await API.get("/auth/logout");
 };

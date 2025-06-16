@@ -33,7 +33,7 @@ app.use("/api/v1/user", authenticate, userRoutes)
 app.use("/api/v1/album",  albumRoutes) // Ensure albumRoutes is imported correctly
 app.use("/api/v1/upload", uploadRoutes) // Ensure userRoutes is imported correctly
 app.use("/api/v1/songs", songRoutes) // Ensure albumRoutes is imported correctly
-app.use("/api/v1/playlist",  playlistRoutes)
+app.use("/api/v1/playlist", authenticate,  playlistRoutes)
 
 app.use(error)
 

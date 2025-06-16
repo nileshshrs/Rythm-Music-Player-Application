@@ -1,9 +1,11 @@
 import { addSongToPlaylist, createEmptyPlaylist, createPlaylistFromAlbum, deletePlaylist, getPlayistsByUser, getPlaylistById, updatePlaylist } from "@/api/api";
+import { useAuth } from "@/context/AuthContext";
 import { queryClient } from "@/main";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { useNavigate } from "react-router-dom";
 
 export const useUserPlaylists = () => {
+    const { user } = useAuth()
     const {
         data: playlists,
         isLoading,
@@ -13,6 +15,7 @@ export const useUserPlaylists = () => {
     } = useQuery({
         queryKey: ["userplaylists"],
         queryFn: getPlayistsByUser,
+        enabled: !!user
     });
 
     return {
