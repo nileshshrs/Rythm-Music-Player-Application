@@ -27,8 +27,7 @@ export const registerController = catchErrors(async (req, res) => {
 
     return setAuthCookies(res, accessToken, refreshToken).status(CREATED).json({
         user,
-        accessToken,
-        refreshToken
+        message: "sucessfully registered."
     });
 });
 

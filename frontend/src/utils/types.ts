@@ -70,6 +70,7 @@ export type LoginResponse = {
 export type AuthContextType = {
     user: User | null;
     login: (data: LoginRequest) => Promise<void>;
+    register: (data: { email: string; username: string; password: string }) => Promise<void>; // ADD THIS
     logout: () => void;
     isAuthenticated: boolean;
     setUser: (user: User | null) => void;

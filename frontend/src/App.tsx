@@ -33,6 +33,16 @@ const DashboardRouteGuard = () => {
   return <Dashboard />;
 };
 
+const SignUpRouteGuard = () => {
+  const { user } = useAuth();
+
+  if (user) {
+    return <Navigate to="/" replace />;
+  }
+
+  return <Register />;
+};
+
 function App() {
   const navigate = useNavigate();
 
@@ -46,7 +56,7 @@ function App() {
       <Routes>
         <Route element={<DashboardRouteGuard />} path="/dashboard" />
         <Route element={<SignInRouteGuard />} path="/sign-in" />
-        <Route element={<Register />} path="/sign-up" />
+        <Route element={<SignUpRouteGuard />} path="/sign-up" />
 
         <Route element={<Layout />}>
           <Route path="/" element={<Home />} />

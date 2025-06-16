@@ -21,26 +21,44 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         }
         return null;
     });
+
     const hasUserInStorage = !!localStorage.getItem("user");
     const { refetch } = useGetUser({ enabled: hasUserInStorage });
 
     const queryClient = useQueryClient();
     const navigate = useNavigate();
 
+    // LOGIN
     const loginMutation = useMutation({
         mutationFn: async (data: LoginRequest) => {
             const res: LoginResponse = await API.post("/auth/sign-in", data);
             return res.user;
         },
         onSuccess: (user: User) => {
-            console.log(user)
             setUser(user);
             localStorage.setItem("user", JSON.stringify(user));
         },
     });
 
-    // Logout mutation using useMutation as requested, without removing or changing your original code
-    const { mutate: logout, } = useMutation({
+    // REGISTER
+    const registerMutation = useMutation({
+        mutationFn: async (data: { email: string; username: string; password: string }) => {
+            // Use "as" to tell TS the correct type
+            const res = await API.post("/auth/sign-up", data) as { user: User; message: string };
+            return res;
+        },
+        onSuccess: (res) => {
+            setUser(res.user);
+            localStorage.setItem("user", JSON.stringify(res.user));
+        },
+        onError: (error: any) => {
+            console.error("Registration failed:", error);
+        }
+    });
+
+
+    // LOGOUT
+    const { mutate: logout } = useMutation({
         mutationFn: () => API.get("/auth/logout"),
         onSuccess: () => {
             localStorage.removeItem("user");
@@ -54,7 +72,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         }
     });
 
-    // Sync user from localStorage on mount (in case of reload)
+    // Sync user from localStorage on mount
     useEffect(() => {
         const stored = localStorage.getItem("user");
         if (stored) {
@@ -66,7 +84,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         }
     }, []);
 
-    // --- Force reload on ANY change to localStorage.user ---
+    // Storage/user mismatch logic (as before)
     useEffect(() => {
         function handleStorageChange(e: StorageEvent) {
             if (e.key === "user") {
@@ -76,7 +94,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
                 refetch().then((result) => {
                     const backendUser = result.data;
                     const isEqual = deepEqual(backendUser, parsedStoredUser);
-                    console.log("Storage event: users equal?", isEqual);
                     if (!isEqual) {
                         // Handle user mismatch here
                     }
@@ -95,10 +112,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
                 refetch().then((result) => {
                     const backendUser = result.data;
                     const isEqual = deepEqual(backendUser, parsedStoredUser);
-                    console.log("Interval check: users equal?", isEqual);
                     if (!isEqual) {
-                        // Handle user mismatch here
-                        logout()
+                        logout();
                     }
                 });
             }
@@ -109,12 +124,16 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
             window.removeEventListener("storage", handleStorageChange);
             clearInterval(interval);
         };
-    }, [refetch]);
+    }, [refetch, logout]);
 
+    // CONTEXT VALUE
     const value: AuthContextType = {
         user,
         login: async (data: LoginRequest) => {
             await loginMutation.mutateAsync(data);
+        },
+        register: async (data: { email: string; username: string; password: string }) => {
+            await registerMutation.mutateAsync(data);
         },
         logout,
         isAuthenticated: !!user,
