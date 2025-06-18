@@ -12,9 +12,14 @@ import albumRoutes from './routes/album.routes.js';
 import uploadRoutes from './routes/upload.routes.js';
 import songRoutes from './routes/song.routes.js';
 import playlistRoutes from './routes/playlist.routes.js';
+import { Server as SocketIOServer } from 'socket.io';
+import socketHandler from './config/socket.js';
+import http from 'http';
+
 
 // Create the Express app
 const app = express();
+const server = http.createServer(app)
 
 // Middleware setup
 app.use(express.json());
@@ -37,8 +42,17 @@ app.use("/api/v1/playlist", authenticate, playlistRoutes)
 
 app.use(error)
 
+// ----- SOCKET.IO -----
+const io = new SocketIOServer(server, {
+    cors: {
+        origin: 'http://localhost:5173',
+        credentials: true
+    }
+});
+
+socketHandler(io);
 // Start the server
-app.listen(PORT, async () => {
+server.listen(PORT, async () => {
     console.log(`App is running on port ${PORT} in a dev environment`);
     connect(); // Ensure this function is defined and imported correctly
 });

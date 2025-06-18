@@ -193,3 +193,13 @@ export const getCurrentUser = async (): Promise<any> => {
 export const logout = async (): Promise<any> => {
   return await API.get("/auth/logout");
 };
+
+
+export const getAllUsers = async (): Promise<any> => {
+  try {
+    const res = await API.get("/user/all");
+    return res;
+  } catch (error) {
+    throw error;
+  }
+};

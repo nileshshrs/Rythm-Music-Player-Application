@@ -12,3 +12,13 @@ export const userController = catchErrors(
         )
     }
 )
+
+
+export const getAllUsersController = catchErrors(
+  async (req, res) => {
+    const users = await userModel.find();
+    // Omit passwords for all users
+    const usersWithoutPasswords = users.map(user => user.omitPassword());
+    return res.status(OK).json(usersWithoutPasswords);
+  }
+);

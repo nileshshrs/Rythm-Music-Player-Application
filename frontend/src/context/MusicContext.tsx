@@ -3,10 +3,12 @@ import {
   ReactNode,
   createContext,
   useContext,
+  useEffect,
   useRef,
   useState,
-  useEffect,
 } from "react";
+import { useSocket } from "./SocketContext";
+import { useAuth } from "./AuthContext";
 
 type QueueType = "single" | "album";
 
@@ -166,6 +168,29 @@ export const MusicContextProvider = ({ children }: { children: ReactNode }) => {
       setCurrentIndex(queue.length > 0 ? 0 : -1);
     }
   };
+
+  const socket = useSocket();
+  const { user } = useAuth();
+
+  useEffect(() => {
+    if (!socket || !user?._id) return;
+
+    // Only emit when song or play state changes
+    if (currentSong && isPlaying) {
+      socket.emit("user-activity", {
+        userId: user._id,
+        songTitle: currentSong.title,
+        songId: currentSong._id,
+      });
+    } else {
+      socket.emit("user-activity", {
+        userId: user._id,
+        songTitle: null,
+        songId: null,
+      });
+    }
+  }, [currentSong, isPlaying, socket, user?._id]);
+
 
   return (
     <MusicContext.Provider
