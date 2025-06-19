@@ -42,7 +42,7 @@ app.use("/api/v1/upload", authenticate, uploadRoutes) // Ensure userRoutes is im
 app.use("/api/v1/songs", songRoutes) // Ensure albumRoutes is imported correctly
 app.use("/api/v1/playlist", authenticate, playlistRoutes)
 app.use("/api/v1/conversation", authenticate, conversationRoutes)
-app.use("/api/v1/message", authenticate, messageRoutes)
+app.use("/api/v1/message", authenticate, messageRoutes);
 
 app.use(error)
 

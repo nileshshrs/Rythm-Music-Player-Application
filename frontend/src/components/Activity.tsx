@@ -12,7 +12,7 @@ import {
     DropdownMenuContent,
     DropdownMenuItem,
 } from "@/components/ui/dropdown-menu";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { MouseEvent, useState } from "react";
 import { useCreateConversation } from "@/hooks/useConversation";
 
@@ -24,14 +24,16 @@ const Activity = () => {
     const userActivityMap = useUserActivityMap();
     const { user: currentUser } = useAuth();
     const [openDropdownId, setOpenDropdownId] = useState<string | null>(null);
+    const navigate = useNavigate();
 
     // Use the mutation hook
     const createConversationMutation = useCreateConversation({
-        onSuccess: (data:any) => {
+        onSuccess: (data: any) => {
             console.log("Conversation created successfully", data);
+            navigate(`/messages/${data?.conversation?._id}`);
             setOpenDropdownId(null);
         },
-        onError: (error:any) => {
+        onError: (error: any) => {
             console.error("Failed to create conversation:", error);
         },
     });

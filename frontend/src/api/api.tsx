@@ -231,3 +231,15 @@ export const getConversationByID = async (id: string): Promise<any> => {
     throw error;
   }
 };
+
+export const sendMessage = async (
+  conversationId: string,
+  content: string,
+  recipient: string
+): Promise<{ message: any; newMessage: any }> => {
+  return await API.post(`/message/create/${conversationId}`, { content, recipient });
+};
+
+export const getMessagesByConversationID = async (conversationId: string): Promise<any[]> => {
+  return await API.get(`/message/conversation/${conversationId}`);
+};

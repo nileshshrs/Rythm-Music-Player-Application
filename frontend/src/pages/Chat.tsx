@@ -89,12 +89,12 @@ const Chat = () => {
                     <Link
                       key={conversation._id}
                       to={`/messages/${conversation._id}`}
-                      className={`flex items-center gap-3 px-3 py-2 rounded-lg cursor-pointer transition-colors duration-150
-            ${selectedConversationId === conversation._id
+                      className={`flex items-center gap-3 px-3 py-2 rounded-xl transition-all duration-200 group
+  ${selectedConversationId === conversation._id
                           ? "bg-zinc-800"
-                          : "hover:bg-zinc-900/50"
+                          : "hover:!bg-zinc-700 hover:shadow-md"
                         }
-          `}
+`}
                     >
                       <Avatar className="size-8 md:size-12">
                         {other?.image && other.image.length > 0 ? (
