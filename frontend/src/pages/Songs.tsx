@@ -104,7 +104,7 @@ const Songs = () => {
                 </DropdownMenuTrigger>
                 <DropdownMenuContent
                   align="start"
-                  className="w-[220px] mt-2 bg-[#18181b] text-sm text-[#fefefe] font-semibold rounded-md p-0 border-0 shadow-[0_2px_8px_rgba(255,255,255,0.03)]"
+                  className="w-[220px] mt-2 bg-[#18181b] text-sm text-[#fefefe] font-semibold rounded-md p-0 border border-white/10 shadow-[0_2px_8px_rgba(255,255,255,0.03)]"
                 >
                   <div className="px-3 py-2 text-[14px] select-none border-b border-zinc-800">
                     Your Playlists

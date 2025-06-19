@@ -52,6 +52,7 @@ export type User = {
     email: string;
     username: string;
     role?: string;
+    image?: string
     // Add more user fields here if you need
 };
 
@@ -75,3 +76,19 @@ export type AuthContextType = {
     isAuthenticated: boolean;
     setUser: (user: User | null) => void;
 };
+
+export interface Participant {
+    _id: string;
+    username: string;
+    image?: string[] | undefined;
+}
+
+export interface conversation {
+    _id: string;
+    createdAt: string;
+    updatedAt: string;
+    lastMessage: string;
+    participants: Participant[];
+
+}
+

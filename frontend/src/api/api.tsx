@@ -203,3 +203,31 @@ export const getAllUsers = async (): Promise<any> => {
     throw error;
   }
 };
+
+
+export const createConversation = async (
+  participants: string[]
+): Promise<any> => {
+  try {
+    const response = await API.post("/conversation/create", { participants });
+    return response;
+  } catch (error) {
+    throw error;
+  }
+};
+
+export const getAllConversations = async (): Promise<any> => {
+  try {
+    return await API.get("/conversation/all");
+  } catch (error) {
+    throw error;
+  }
+};
+
+export const getConversationByID = async (id: string): Promise<any> => {
+  try {
+    return await API.get(`/conversation/${id}`);
+  } catch (error) {
+    throw error;
+  }
+};

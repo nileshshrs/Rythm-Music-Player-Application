@@ -12,35 +12,38 @@ import Register from "./pages/Register";
 import { setNavigate } from "./utils/navigate";
 import { useEffect } from "react";
 import { useAuth } from "./context/AuthContext";
+import Messages from "./components/chat/Messages";
 
 const SignInRouteGuard = () => {
   const { user } = useAuth();
-
   if (user) {
     return <Navigate to="/" replace />;
   }
-
   return <Login />;
 };
 
 const DashboardRouteGuard = () => {
   const { user } = useAuth();
-
   if (!user || user.role !== "admin") {
     return <Navigate to="/" replace />;
   }
-
   return <Dashboard />;
 };
 
 const SignUpRouteGuard = () => {
   const { user } = useAuth();
-
   if (user) {
     return <Navigate to="/" replace />;
   }
-
   return <Register />;
+};
+
+const ChatRouteGuard = () => {
+  const { user } = useAuth();
+  if (!user) {
+    return <Navigate to="/sign-in" replace />;
+  }
+  return <Chat />;
 };
 
 function App() {
@@ -50,24 +53,23 @@ function App() {
     setNavigate(navigate);
   }, [navigate]);
 
-
   return (
-    <>
-      <Routes>
-        <Route element={<DashboardRouteGuard />} path="/dashboard" />
-        <Route element={<SignInRouteGuard />} path="/sign-in" />
-        <Route element={<SignUpRouteGuard />} path="/sign-up" />
+    <Routes>
+      <Route element={<DashboardRouteGuard />} path="/dashboard" />
+      <Route element={<SignInRouteGuard />} path="/sign-in" />
+      <Route element={<SignUpRouteGuard />} path="/sign-up" />
 
-        <Route element={<Layout />}>
-          <Route path="/" element={<Home />} />
-          <Route path="/messages" element={<Chat />} />
-          <Route path="/album/:id" element={<Album />} />
-          <Route path="/songs/:id" element={<Songs />} />
-          <Route path="/playlist/:id" element={<Playlist />} />
-          <Route path="/search" element={<Search />} />
+      <Route element={<Layout />}>
+        <Route path="/" element={<Home />} />
+        <Route path="/messages" element={<ChatRouteGuard />}>
+          <Route path=":id" element={<Messages />} />
         </Route>
-      </Routes>
-    </>
+        <Route path="/album/:id" element={<Album />} />
+        <Route path="/songs/:id" element={<Songs />} />
+        <Route path="/playlist/:id" element={<Playlist />} />
+        <Route path="/search" element={<Search />} />
+      </Route>
+    </Routes>
   );
 }
 

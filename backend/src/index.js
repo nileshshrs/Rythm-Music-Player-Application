@@ -15,6 +15,8 @@ import playlistRoutes from './routes/playlist.routes.js';
 import { Server as SocketIOServer } from 'socket.io';
 import socketHandler from './config/socket.js';
 import http from 'http';
+import conversationRoutes from './routes/conversation.routes.js';
+import messageRoutes from './routes/message.routes.js';
 
 
 // Create the Express app
@@ -39,6 +41,8 @@ app.use("/api/v1/album", albumRoutes) // Ensure albumRoutes is imported correctl
 app.use("/api/v1/upload", authenticate, uploadRoutes) // Ensure userRoutes is imported correctly
 app.use("/api/v1/songs", songRoutes) // Ensure albumRoutes is imported correctly
 app.use("/api/v1/playlist", authenticate, playlistRoutes)
+app.use("/api/v1/conversation", authenticate, conversationRoutes)
+app.use("/api/v1/message", authenticate, messageRoutes)
 
 app.use(error)
 
