@@ -243,3 +243,17 @@ export const sendMessage = async (
 export const getMessagesByConversationID = async (conversationId: string): Promise<any[]> => {
   return await API.get(`/message/conversation/${conversationId}`);
 };
+
+export const updateUser = async (data: {
+  image?: string;
+  username?: string;
+  bio?: string;
+  email?: string;
+}): Promise<any> => {
+  try {
+    const res = await API.patch("/user/update", data);
+    return res;
+  } catch (error) {
+    throw error;
+  }
+};

@@ -16,7 +16,7 @@ const UserDropdown = () => {
         <Avatar
           className="w-9 h-9 cursor-pointer shadow-[0_0_0_3px_rgba(255,255,255,0.08)] transition-shadow duration-200 hover:shadow-[0_0_0_4px_rgba(255,255,255,0.14)]"
         >
-          <AvatarImage src="" alt="User" />
+          <AvatarImage src={user?.image} alt="User" className="aspect-square object-cover"/>
           <AvatarFallback className="bg-pink-500 text-white text-sm uppercase font-bold">
             {user ? user?.username[0] : "A"}
           </AvatarFallback>

@@ -52,7 +52,8 @@ export type User = {
     email: string;
     username: string;
     role?: string;
-    image?: string
+    image?: string;
+    bio?: string;
     // Add more user fields here if you need
 };
 

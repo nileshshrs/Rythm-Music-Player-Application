@@ -9,7 +9,12 @@ const PlaylistImage: React.FC<PlaylistImageProps> = ({ coverImage }) => {
         <div className="playlist-image-wrap">
             <div
                 className="playlist-image"
-                style={{ backgroundImage: `url(${coverImage})` }}
+                style={{
+                    backgroundImage: `url(${coverImage})`,
+                    backgroundSize: "cover",
+                    backgroundPosition: "center",
+                    backgroundRepeat: "no-repeat"
+                }}
             >
                 <div className="playlist-image-overlay-1"></div>
                 <div className="playlist-image-overlay-2"></div>

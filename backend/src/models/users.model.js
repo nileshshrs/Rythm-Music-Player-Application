@@ -4,6 +4,8 @@ import { compare, hash } from "../utils/bcrypt.js";
 const userSchema = new mongoose.Schema({
   email: { type: String, unique: true, required: true },
   username: { type: String, unique: true, required: true },
+  image: {type: String, default: "" },
+  bio: { type: String, default: "" },
   password: { type: String, required: true },
   role: { type: String, enum: ["user", "admin"], default: "user" },
 }, {

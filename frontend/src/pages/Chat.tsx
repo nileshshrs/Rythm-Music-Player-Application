@@ -96,9 +96,9 @@ const Chat = () => {
                         }
 `}
                     >
-                      <Avatar className="size-8 md:size-12">
+                      <Avatar className="size-8 md:size-12 hover:!bg-zinc-900/80 ">
                         {other?.image && other.image.length > 0 ? (
-                          <AvatarImage src={other.image[0]} />
+                          <AvatarImage src={other.image} className="aspect-square object-cover" />
                         ) : (
                           <AvatarFallback className="bg-pink-500 text-white font-bold uppercase">
                             {otherUsername[0]}

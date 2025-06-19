@@ -8,7 +8,7 @@ import { CREATED, NOT_FOUND, OK } from "../utils/constants/http.js";
 
 export const createEmptyPlaylistController = catchErrors(
     async (req, res) => {
-        const userID = "683869119da4e67d3ea478b1";
+        const userID = req.userID;
 
 
         const name = await generateNextPlaylistName(userID);
@@ -28,7 +28,7 @@ export const createEmptyPlaylistController = catchErrors(
 
 export const getPlaylistsByUserController = catchErrors(
     async (req, res) => {
-        const userID = "683869119da4e67d3ea478b1";
+        const userID = req.userID;
 
         const playlists = await PlaylistModel.find({ owner: userID })
             .select("_id name coverImage songs owner")
@@ -52,7 +52,7 @@ export const getPlaylistsByUserController = catchErrors(
 export const getPlaylistByIdController = catchErrors(
     async (req, res) => {
         const { id } = req.params;
-        const userID = "683869119da4e67d3ea478b1";
+        const userID = req.userID;
 
         const playlist = await PlaylistModel.findOne({
             _id: id,
@@ -82,7 +82,7 @@ export const getPlaylistByIdController = catchErrors(
 export const addSongToPlaylistController = catchErrors(
     async (req, res) => {
         const { id } = req.params;
-        const userID = "683869119da4e67d3ea478b1";
+        const userID = req.userID;
         const { songID } = req.body;
 
         const playlist = await PlaylistModel.findOne({
@@ -107,7 +107,7 @@ export const addSongToPlaylistController = catchErrors(
 export const updatePlaylistController = catchErrors(
     async (req, res) => {
         const { id } = req.params;
-        const userID = "683869119da4e67d3ea478b1"; // comes from authenticate middleware
+        const userID = req.userID; // comes from authenticate middleware
         const { name, themeColor, coverImage, description } = req.body;
 
         const playlist = await PlaylistModel.findOne({
@@ -134,7 +134,7 @@ export const updatePlaylistController = catchErrors(
 
 
 export const createPlaylistFromAlbumController = catchErrors(async (req, res) => {
-    const userID = "683869119da4e67d3ea478b1";
+    const userID = req.userID;
     const { albumID } = req.body;
 
     appAssert(albumID, NOT_FOUND, "Album ID is required");
@@ -161,7 +161,7 @@ export const createPlaylistFromAlbumController = catchErrors(async (req, res) =>
 export const deletePlaylistController = catchErrors(
     async (req, res) => {
         const { id } = req.params;
-        const userID = "683869119da4e67d3ea478b1";
+        const userID = req.userID;
 
         const deleted = await playlistModel.findOneAndDelete({
             _id: id,

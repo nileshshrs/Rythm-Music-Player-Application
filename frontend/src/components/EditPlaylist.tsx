@@ -29,12 +29,16 @@ const EditPlaylist: React.FC<EditPlaylistProps> = ({
     const [description, setDescription] = useState<string>(initialDescription);
     const [themeColor, setThemeColor] = useState<string>(initialThemeColor);
     const [coverImage, setCoverImage] = useState<string>(initialCoverImage);
+
+    // Local preview state and previous cover ref
     const [coverPreview, setCoverPreview] = useState<string | null>(null);
+    const prevCoverRef = useRef<string | undefined>(undefined);
     const fileInputRef = useRef<HTMLInputElement | null>(null);
 
     const { mutate: uploadImage } = useUploadImage();
     const { mutate: updatePlaylist } = useUpdatePlaylist();
 
+    // Reset state on open/close or prop change
     useEffect(() => {
         setName(initialName);
         setDescription(initialDescription);
@@ -42,6 +46,17 @@ const EditPlaylist: React.FC<EditPlaylistProps> = ({
         setCoverImage(initialCoverImage);
         setCoverPreview(null);
     }, [open, initialName, initialDescription, initialThemeColor, initialCoverImage]);
+
+    // Only clear preview when real backend value changes
+    useEffect(() => {
+        if (
+            prevCoverRef.current !== coverImage &&
+            coverPreview // Only if we were previewing
+        ) {
+            setCoverPreview(null);
+        }
+        prevCoverRef.current = coverImage;
+    }, [coverImage, coverPreview]);
 
     // Upload image & update playlist immediately on file change
     function handleImageChange(e: ChangeEvent<HTMLInputElement>) {
@@ -59,6 +74,9 @@ const EditPlaylist: React.FC<EditPlaylistProps> = ({
                             data: { coverImage: imageUrl },
                         });
                     }
+                },
+                onError: () => {
+                    setCoverPreview(initialCoverImage || null);
                 },
             });
         }
@@ -90,9 +108,12 @@ const EditPlaylist: React.FC<EditPlaylistProps> = ({
         onOpenChange(openValue);
     }
 
+    // Always use a cache buster on backend image to force reload after update
     const imageToShow =
         coverPreview ||
-        (coverImage && coverImage.trim().length > 0 ? coverImage : "/Note.jpg");
+        (coverImage && coverImage.trim().length > 0
+            ? coverImage + "?t=" + encodeURIComponent(Date.now())
+            : "/Note.jpg");
 
     return (
         <Dialog open={open} onOpenChange={handleOpenChange}>
@@ -126,7 +147,7 @@ const EditPlaylist: React.FC<EditPlaylistProps> = ({
                                 transition-all
                                 z-10
                                 cursor-pointer
-                            ">
+                            " onClick={() => fileInputRef.current?.click()}>
                                 <svg width={38} height={38} viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth={2.2} strokeLinecap="round" strokeLinejoin="round">
                                     <path d="M12 20h9" />
                                     <path d="M16.5 3.5a2.121 2.121 0 1 1 3 3L7 19.5l-4 1 1-4L16.5 3.5z" />

@@ -114,7 +114,7 @@ const Messages = () => {
       <div className="p-4 border-b border-zinc-800">
         <div className="flex items-center gap-3">
           <Avatar className="size-8 md:size-12">
-            <AvatarImage src={other?.image?.[0] || ""} />
+            <AvatarImage src={other?.image || ""} className="object-cover aspect-square" />
             <AvatarFallback className="bg-pink-500 text-white font-bold uppercase">
               {other?.username?.[0]?.toUpperCase() || "?"}
             </AvatarFallback>
@@ -142,7 +142,7 @@ const Messages = () => {
                   {!isSelf && (
                     <div className="flex flex-col items-center mr-2 min-w-[40px]">
                       <Avatar className="size-8 mb-1">
-                        <AvatarImage src={other?.image?.[0] || ""} />
+                        <AvatarImage src={other?.image || ""} className="aspect-square object-cover"/>
                         <AvatarFallback className="bg-pink-500 text-white font-bold uppercase">
                           {other?.username?.[0]?.toUpperCase() || "?"}
                         </AvatarFallback>
@@ -167,7 +167,7 @@ const Messages = () => {
                   {isSelf && (
                     <div className="flex flex-col items-center ml-2 min-w-[40px]">
                       <Avatar className="size-8 mb-1">
-                        <AvatarImage src={currentUser.image?.[0] || ""} />
+                        <AvatarImage src={currentUser.image || ""} className="aspect-square object-cover"/>
                         <AvatarFallback className="bg-pink-500 text-white font-bold uppercase">
                           {currentUser.username?.[0]?.toUpperCase() || "?"}
                         </AvatarFallback>

@@ -31,8 +31,8 @@ export const getMessagesController = catchErrors(
         const conversation = req.params.id;
 
         const messages = await messageModel.find({ conversation })
-            .populate("sender", "username",)
-            .populate("recipient", "username",);
+            .populate("sender", "username image",)
+            .populate("recipient", "username image",);
 
         return res.status(OK).json(messages);
     }
