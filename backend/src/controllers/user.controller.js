@@ -52,3 +52,14 @@ export const updateUserController = catchErrors(
     return res.status(OK).json(user.omitPassword());
   }
 );
+
+export const getUserByIdController = catchErrors(
+  async (req, res) => {
+    const { id } = req.params;
+    const user = await userModel.findById(id);
+    appAssert(user, NOT_FOUND, "user not found");
+    return res.status(OK).json(
+      user.omitPassword()
+    );
+  }
+);

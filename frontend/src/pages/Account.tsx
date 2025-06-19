@@ -1,56 +1,84 @@
 import { ScrollArea } from "@/components/ui/scroll-area";
-import React from "react";
+import React, { useState, useRef } from "react";
 import { useAuth } from "@/context/AuthContext";
 import { useUpdateUser } from "@/hooks/useUpdateUser";
 import { useUploadImage } from "@/hooks/useImage";
+import { Pencil, Check, X } from "lucide-react";
 
 const Account = () => {
-    const { user } = useAuth();
-    const fileInputRef = React.useRef<HTMLInputElement | null>(null);
+    const { user, setUser } = useAuth();
+    const fileInputRef = useRef<HTMLInputElement | null>(null);
 
     const uploadImageMutation = useUploadImage();
     const updateUserMutation = useUpdateUser();
 
     // For instant local image preview
-    const [localImage, setLocalImage] = React.useState<string | null>(null);
+    const [localImage, setLocalImage] = useState<string | null>(null);
+
+    // For editing fields
+    const [editingField, setEditingField] = useState<string | null>(null);
+    const [fieldValue, setFieldValue] = useState<string>("");
+    const [error, setError] = useState<string>("");
 
     function handleCoverImageChange(e: React.ChangeEvent<HTMLInputElement>) {
         const file = e.target.files?.[0];
         if (!file) return;
 
-        // Save current image in case of revert
         const prevImage = user?.image || "";
 
-        // 1. Show local preview instantly
         const reader = new FileReader();
         reader.onload = () => {
             setLocalImage(reader.result as string);
 
-            // 2. Start upload
             uploadImageMutation.mutate(file, {
                 onSuccess: (imageUrl: string) => {
-                    // 3. PATCH user with new image URL
                     updateUserMutation.mutate(
                         { image: imageUrl },
                         {
-                            onSuccess: () => {
-                                setLocalImage(null); // Clear preview, context will rerender with actual image
+                            onSuccess: (newUser: any) => {
+                                setLocalImage(null);
+                                setUser?.(newUser);
                             },
-                            onError: () => {
-                                setLocalImage(prevImage); // Revert on user update fail
-                            }
+                            onError: () => setLocalImage(prevImage)
                         }
                     );
                 },
-                onError: () => {
-                    setLocalImage(prevImage); // Revert on upload fail
-                }
+                onError: () => setLocalImage(prevImage)
             });
         };
         reader.readAsDataURL(file);
     }
 
-    // Use localImage as override, else user.image from context
+    function handleEdit(field: string, value: string) {
+        setEditingField(field);
+        setFieldValue(value);
+        setError("");
+    }
+
+    function handleSave(field: string) {
+        if ((field === "username" || field === "email") && !fieldValue.trim()) {
+            setError("You can't leave this field empty.");
+            return;
+        }
+        updateUserMutation.mutate(
+            { [field]: fieldValue.trim() },
+            {
+                onSuccess: (newUser: any) => {
+                    setEditingField(null);
+                    setFieldValue("");
+                    setError("");
+                    setUser?.(newUser);
+                }
+            }
+        );
+    }
+
+    function handleCancelEdit() {
+        setEditingField(null);
+        setFieldValue("");
+        setError("");
+    }
+
     const imageToShow = localImage !== null ? localImage : (user?.image?.trim() ? user.image : "/Note.jpg");
 
     return (
@@ -97,17 +125,141 @@ const Account = () => {
                             {/* Details */}
                             <div className="text-zinc-300 text-center md:text-left space-y-4">
                                 <p className="text-sm uppercase text-zinc-400 font-medium">Account</p>
-                                <h1 className="text-4xl md:text-6xl font-bold leading-tight">{user?.username}</h1>
+                                {/* Username */}
+                                <div className="flex items-center gap-2 justify-center md:justify-start">
+                                    {editingField === "username" ? (
+                                        <div className="flex items-center gap-2">
+                                            <input
+                                                className="bg-zinc-800 text-zinc-100 px-3 py-1 rounded font-bold text-3xl w-[160px] outline-none"
+                                                value={fieldValue}
+                                                onChange={e => {
+                                                    setFieldValue(e.target.value);
+                                                    setError("");
+                                                }}
+                                                autoFocus
+                                                onKeyDown={e => {
+                                                    if (e.key === "Enter") handleSave("username");
+                                                    if (e.key === "Escape") handleCancelEdit();
+                                                }}
+                                            />
+                                            <Check
+                                                className="w-5 h-5 text-green-500 cursor-pointer hover:scale-110 transition"
+                                                onClick={() => handleSave("username")}
+                                            />
+                                            <X
+                                                className="w-5 h-5 text-red-500 cursor-pointer hover:scale-110 transition"
+                                                onClick={handleCancelEdit}
+                                            />
+                                        </div>
+                                    ) : (
+                                        <>
+                                            <h1 className="text-4xl md:text-6xl font-bold leading-tight">{user?.username}</h1>
+                                            <button
+                                                className="ml-2 text-zinc-400 hover:text-white"
+                                                onClick={() => handleEdit("username", user?.username || "")}
+                                                tabIndex={-1}
+                                            >
+                                                <Pencil className="w-5 h-5" />
+                                            </button>
+                                        </>
+                                    )}
+                                </div>
+                                {editingField === "username" && error && (
+                                    <div className="text-red-500 text-sm mt-1">{error}</div>
+                                )}
+
+                                {/* Email */}
                                 <div className="flex flex-wrap justify-center md:justify-start items-center gap-3 text-sm text-zinc-200 font-medium">
-                                    <span className="text-zinc-300 font-semibold">{user?.email}</span>
+                                    {editingField === "email" ? (
+                                        <div className="flex items-center gap-2">
+                                            <input
+                                                className="bg-zinc-800 text-zinc-100 px-2 py-1 rounded font-medium w-[230px] outline-none"
+                                                value={fieldValue}
+                                                type="email"
+                                                onChange={e => {
+                                                    setFieldValue(e.target.value);
+                                                    setError("");
+                                                }}
+                                                autoFocus
+                                                onKeyDown={e => {
+                                                    if (e.key === "Enter") handleSave("email");
+                                                    if (e.key === "Escape") handleCancelEdit();
+                                                }}
+                                            />
+                                            <Check
+                                                className="w-5 h-5 text-green-500 cursor-pointer hover:scale-110 transition"
+                                                onClick={() => handleSave("email")}
+                                            />
+                                            <X
+                                                className="w-5 h-5 text-red-500 cursor-pointer hover:scale-110 transition"
+                                                onClick={handleCancelEdit}
+                                            />
+                                        </div>
+                                    ) : (
+                                        <>
+                                            <span className="text-zinc-300 font-semibold">{user?.email}</span>
+                                            <button
+                                                className="ml-2 text-zinc-400 hover:text-white"
+                                                onClick={() => handleEdit("email", user?.email || "")}
+                                                tabIndex={-1}
+                                            >
+                                                <Pencil className="w-4 h-4" />
+                                            </button>
+                                        </>
+                                    )}
                                     <span>&bull;</span>
                                     <span className="capitalize">{user?.role}</span>
                                 </div>
-                                {user?.bio && (
-                                    <p className="text-base text-zinc-400 max-w-xl mx-auto md:mx-0 break-words whitespace-pre-line">
-                                        {user?.bio}
-                                    </p>
+                                {editingField === "email" && error && (
+                                    <div className="text-red-500 text-sm mt-1">{error}</div>
                                 )}
+
+                                {/* Bio */}
+                                <div className="flex flex-col gap-2 max-w-xl mx-auto md:mx-0">
+                                    {editingField === "bio" ? (
+                                        <div className="flex items-center gap-2">
+                                            <textarea
+                                                className="bg-zinc-800 text-zinc-100 px-3 py-2 rounded w-full outline-none min-h-[50px]"
+                                                value={fieldValue}
+                                                maxLength={300}
+                                                autoFocus
+                                                onChange={e => setFieldValue(e.target.value)}
+                                                onKeyDown={e => {
+                                                    if (e.key === "Enter" && !e.shiftKey) handleSave("bio");
+                                                    if (e.key === "Escape") handleCancelEdit();
+                                                }}
+                                                placeholder="Write something about yourself"
+                                            />
+                                            <Check
+                                                className="w-5 h-5 text-green-500 cursor-pointer hover:scale-110 transition mt-2"
+                                                onClick={() => handleSave("bio")}
+                                            />
+                                            <X
+                                                className="w-5 h-5 text-red-500 cursor-pointer hover:scale-110 transition mt-2"
+                                                onClick={handleCancelEdit}
+                                            />
+                                        </div>
+                                    ) : user?.bio ? (
+                                        <div className="flex items-start gap-2">
+                                            <p className="text-base text-zinc-400 break-words whitespace-pre-line">{user?.bio}</p>
+                                            <button
+                                                className="ml-2 text-zinc-400 hover:text-white mt-1"
+                                                onClick={() => handleEdit("bio", user?.bio || "")}
+                                                tabIndex={-1}
+                                            >
+                                                <Pencil className="w-4 h-4" />
+                                            </button>
+                                        </div>
+                                    ) : (
+                                        <button
+                                            className="text-zinc-500 hover:text-white font-medium text-sm flex items-center gap-1"
+                                            onClick={() => handleEdit("bio", "")}
+                                        >
+                                            <Pencil className="w-4 h-4" />
+                                            Add a bio
+                                        </button>
+                                    )}
+                                </div>
                             </div>
                         </div>
                     </div>

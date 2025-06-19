@@ -257,3 +257,13 @@ export const updateUser = async (data: {
     throw error;
   }
 };
+
+
+export const getUserById = async (id: string): Promise<any> => {
+  try {
+    const res = await API.get(`/user/${id}`);
+    return res;
+  } catch (error) {
+    throw error;
+  }
+};

@@ -14,6 +14,7 @@ import { useEffect } from "react";
 import { useAuth } from "./context/AuthContext";
 import Messages from "./components/chat/Messages";
 import Account from "./pages/Account";
+import Profile from "./pages/Profile";
 
 const SignInRouteGuard = () => {
   const { user } = useAuth();
@@ -70,6 +71,7 @@ function App() {
         <Route path="/playlist/:id" element={<Playlist />} />
         <Route path="/search" element={<Search />} />
         <Route path="/account" element={<Account />} />
+        <Route path="/profile/:id" element={<Profile />} />
       </Route>
     </Routes>
   );
