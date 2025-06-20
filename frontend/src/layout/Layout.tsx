@@ -46,7 +46,7 @@ const Layout = () => {
         {user && (
           <ResizablePanel
             defaultSize={20}
-            minSize={0}
+            minSize={20}
             maxSize={20}
             collapsedSize={0}
             className="hidden md:block w-0 md:w-1/5 lg:w-1/4"

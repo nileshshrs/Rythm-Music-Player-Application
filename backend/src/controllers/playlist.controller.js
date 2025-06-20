@@ -176,3 +176,27 @@ export const deletePlaylistController = catchErrors(
     });
 
 
+export const getPlaylistsByUserIDController = catchErrors(
+    async (req, res) => {
+        const userId = req.params.id;
+
+        // Find all playlists where owner is userId
+        const playlists = await PlaylistModel.find({ owner: userId })
+            .select("_id name coverImage songs owner")
+            .populate("owner", "username", "user")
+            .lean();
+        if (!playlists || playlists.length === 0) {
+            return res.status(404).json({ message: "No playlists found for this user" });
+        }
+
+        const minimalPlaylists = playlists.map((playlist) => ({
+            _id: playlist._id,
+            name: playlist.name,
+            coverImage: playlist.coverImage,
+            totalSongs: playlist.songs.length,
+            username: playlist.owner.username
+        }));
+
+        return res.status(200).json(minimalPlaylists);
+    }
+);

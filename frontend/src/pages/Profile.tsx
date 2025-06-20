@@ -2,6 +2,7 @@ import { useParams } from "react-router-dom";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { useUserById } from "@/hooks/useUserByID";
 import Loader from "@/components/Loader";
+import PlaylistCard from "@/components/PlaylistCard";
 
 const fallbackImg = "/Note.jpg";
 
@@ -63,6 +64,7 @@ const Profile = () => {
                         </div>
                     </div>
                 </div>
+                <PlaylistCard />
             </ScrollArea>
         </div>
     );

@@ -1,8 +1,27 @@
-import { useUserPlaylists } from "@/hooks/usePlaylist";
+import { useLocation, useParams } from "react-router-dom";
+import { useUserPlaylists, usePlaylistsByUserId } from "@/hooks/usePlaylist";
 import { Link } from "react-router-dom";
 
 const PlaylistCard = () => {
-    const { playlists, isLoading, isError } = useUserPlaylists();
+    const location = useLocation();
+    const params = useParams();
+
+    // Determine which hook to use based on the path
+    let playlists, isLoading, isError;
+    if (location.pathname.startsWith("/profile/") && params.id) {
+        // /profile/:id
+        const query = usePlaylistsByUserId(params.id);
+        playlists = query.data;
+        isLoading = query.isLoading;
+        isError = query.isError;
+    } else {
+        // /account or default
+        const query = useUserPlaylists();
+        playlists = query.playlists;
+        isLoading = query.isLoading;
+        isError = query.isError;
+    }
+    console.log("Playlists:", playlists, "Loading:", isLoading, "Error:", isError);
 
     return (
         <div className="pt-4 pb-2 px-6 md:px-12">
@@ -23,7 +42,7 @@ const PlaylistCard = () => {
                                     <img
                                         src={
                                             playlist.coverImage ||
-                                            "/ab0d29cd-bd99-40cb-95c8-d24624e2350f.png"
+                                            "/Note.jpg"
                                         }
                                         alt={playlist.name}
                                         className="w-full h-full object-cover rounded-md"

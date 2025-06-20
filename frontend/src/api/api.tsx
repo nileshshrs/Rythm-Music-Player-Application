@@ -267,3 +267,13 @@ export const getUserById = async (id: string): Promise<any> => {
     throw error;
   }
 };
+export const getPlaylistsByUserId = async (userId: string): Promise<any> => {
+  try {
+    const res= await API.get(`/playlist/get-by-user/${userId}`);
+    console.log("Playlists by user ID:", res);
+    return res;
+  } catch (error) {
+    throw error;
+  }
+};
+

@@ -1,4 +1,4 @@
-import { addSongToPlaylist, createEmptyPlaylist, createPlaylistFromAlbum, deletePlaylist, getPlayistsByUser, getPlaylistById, updatePlaylist } from "@/api/api";
+import { addSongToPlaylist, createEmptyPlaylist, createPlaylistFromAlbum, deletePlaylist, getPlayistsByUser, getPlaylistById, getPlaylistsByUserId, updatePlaylist } from "@/api/api";
 import { useAuth } from "@/context/AuthContext";
 import { queryClient } from "@/main";
 import { useMutation, useQuery } from "@tanstack/react-query";
@@ -121,3 +121,15 @@ export const useAddSongToPlaylist = () => useMutation({
         queryClient.invalidateQueries({ queryKey: ["playlist", variables.playlistId] });
     },
 });
+
+export const usePlaylistsByUserId = (id?: string) => {
+     const { user } = useAuth()
+    return useQuery({
+        queryKey: ["playlistsByUserId", id],
+        queryFn: () => {
+            if (!id) throw new Error("User ID is required");
+            return getPlaylistsByUserId(id);
+        },
+        enabled: !!id && !!user,
+    });
+};
