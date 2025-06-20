@@ -93,3 +93,10 @@ export interface conversation {
 
 }
 
+export type MinimalPlaylist = {
+  _id: string;
+  name: string;
+  coverImage: string;
+  totalSongs: number;
+  username: string;
+};

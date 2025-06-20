@@ -10,6 +10,7 @@ import PlaylistImage from "@/components/PlaylistImage";
 import { useCreatePlaylist, useUserPlaylists } from "@/hooks/usePlaylist";
 import { useAuth } from "@/context/AuthContext";
 import Prompt from "@/components/Prompt"; // <-- Add this import
+import { MinimalPlaylist } from "@/utils/types";
 
 const LeftSidebar = () => {
   const { playlists, isLoading, isError, error } = useUserPlaylists();
@@ -141,10 +142,10 @@ const LeftSidebar = () => {
               </div>
             ) : (
               playlists
-                ?.filter((playlist: any) =>
+                ?.filter((playlist: MinimalPlaylist) =>
                   playlist.name.toLowerCase().includes(search.toLowerCase())
                 )
-                .map((playlist: any) => (
+                .map((playlist: MinimalPlaylist) => (
                   <Link
                     to={`/playlist/${playlist._id}`}
                     key={playlist._id}

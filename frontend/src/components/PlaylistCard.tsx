@@ -1,6 +1,7 @@
 import { useLocation, useParams } from "react-router-dom";
 import { useUserPlaylists, usePlaylistsByUserId } from "@/hooks/usePlaylist";
 import { Link } from "react-router-dom";
+import { MinimalPlaylist } from "@/utils/types";
 
 const PlaylistCard = () => {
     const location = useLocation();
@@ -32,7 +33,7 @@ const PlaylistCard = () => {
                 <div className="grid grid-cols-[repeat(auto-fill,minmax(200px,1fr))] gap-5">
                     {isLoading || isError || !playlists
                         ? null
-                        : playlists.map((playlist: any) => (
+                        : playlists.map((playlist: MinimalPlaylist) => (
                             <Link
                                 key={playlist._id}
                                 to={`/playlist/${playlist._id}`}
