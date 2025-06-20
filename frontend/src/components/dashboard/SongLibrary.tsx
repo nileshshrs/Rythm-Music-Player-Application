@@ -122,15 +122,31 @@ const SongLibrary = () => {
                       </div>
                     </div>
 
-                    <div className="text-zinc-300 truncate font-semibold">
+                    <div className="text-zinc-300 truncate font-semibold flex items-center gap-2">
                       {song.album && song.album.trim() ? (
-                        <Link to={`/album/${song.album}`} className="hover:underline">
-                          {song.albumTitle?.trim()
-                            ? song.albumTitle
-                            : song.album}
-                        </Link>
+                        <>
+                          <img
+                            src={song.albumCoverImage || fallbackImg}
+                            alt={song.title}
+                            className="w-5 h-5 rounded object-cover shrink-0"
+                          />
+                          <Link to={`/album/${song.album}`} className="hover:underline">
+
+                            {song.albumTitle?.trim()
+                              ? song.albumTitle
+                              : song.album}
+                          </Link>
+                        </>
                       ) : (
-                        "No album"
+                        <>
+                          <img
+                            src={song.albumCoverImage || fallbackImg}
+                            alt={song.title}
+                            className="w-5 h-5 rounded object-cover shrink-0"
+                          />
+                          <span>No album</span>
+                        </>
+
                       )}
                     </div>
                     <div className="text-zinc-300 text-center font-semibold">

@@ -26,6 +26,7 @@ export type Song = {
     album?: string | null; // album ID
     albumTitle?: string; // album title for display
     themeColor?: string; // color for UI theming
+    albumCoverImage?: string; // cover image for the album
 };
 
 export interface AlbumResponse {

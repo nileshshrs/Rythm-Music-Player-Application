@@ -29,7 +29,7 @@ export const getAllSongsController = catchErrors(
     const songs = await SongModel.find()
       .populate({
         path: "album",
-        select: "title",
+        select: "title coverImage",
         match: { _id: { $exists: true } } // ensures album exists
       })
       .lean();
@@ -37,7 +37,8 @@ export const getAllSongsController = catchErrors(
     const response = songs.map(song => ({
       ...song,
       album: song.album?._id?.toString() || null,
-      albumTitle: song.album?.title || null
+      albumTitle: song.album?.title || null,
+      albumCoverImage: song.album?.coverImage || null,
     }));
 
     return res.status(OK).json(response);

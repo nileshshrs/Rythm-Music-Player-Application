@@ -115,7 +115,12 @@ const AlbumLibrary = () => {
                                             </div>
                                         </div>
 
-                                        <div className="text-zinc-300 truncate font-semibold">
+                                        <div className="text-zinc-300 truncate font-semibold flex items-center gap-2">
+                                            <img
+                                                src={album.artistImage || fallbackImg}
+                                                alt={album.title}
+                                                className="w-5 h-5 rounded object-cover shrink-0"
+                                            />
                                             {album.artist}
                                         </div>
 
