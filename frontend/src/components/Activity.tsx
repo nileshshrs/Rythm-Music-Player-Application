@@ -117,7 +117,7 @@ const Activity = () => {
                                             sideOffset={-50}
                                             className="w-[220px] mt-2 bg-[#18181b] text-sm text-[#fefefe] font-semibold rounded-md p-0 border border-white/10 shadow-[0_2px_8px_rgba(255,255,255,0.03)]"
                                         >
-                                            <DropdownMenuItem className="px-3 py-2 hover:bg-zinc-800 focus:bg-zinc-800 transition-colors">
+                                            <DropdownMenuItem className="px-3 py-2 hover:bg-zinc-800 focus:bg-zinc-800 transition-colors hover:!text-white" asChild>
                                                 <Link
                                                     to={`/profile/${user._id}`}
                                                     className="w-full hover:text-white transition-colors"

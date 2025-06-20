@@ -4,6 +4,7 @@ import { useAuth } from "@/context/AuthContext";
 import { useUpdateUser } from "@/hooks/useUpdateUser";
 import { useUploadImage } from "@/hooks/useImage";
 import { Pencil, Check, X } from "lucide-react";
+import PlaylistCard from "@/components/PlaylistCard";
 
 const Account = () => {
     const { user, setUser } = useAuth();
@@ -12,10 +13,7 @@ const Account = () => {
     const uploadImageMutation = useUploadImage();
     const updateUserMutation = useUpdateUser();
 
-    // For instant local image preview
     const [localImage, setLocalImage] = useState<string | null>(null);
-
-    // For editing fields
     const [editingField, setEditingField] = useState<string | null>(null);
     const [fieldValue, setFieldValue] = useState<string>("");
     const [error, setError] = useState<string>("");
@@ -93,8 +91,9 @@ const Account = () => {
                     />
 
                     <div className="relative z-10">
+                        {/* Header/Profile Section, styled like Songs */}
                         <div className="flex flex-col md:flex-row items-center md:items-end gap-6 px-6 pt-10 pb-8">
-                            {/* Profile/Cover image */}
+                            {/* Profile image */}
                             <div className="relative group w-[200px] h-[200px] md:w-[240px] md:h-[240px] shadow-2xl rounded-lg overflow-hidden">
                                 <img
                                     src={imageToShow}
@@ -262,6 +261,10 @@ const Account = () => {
                                 </div>
                             </div>
                         </div>
+
+                        {/* Your Playlists Grid Section with Horizontal Spacing */}
+                        <PlaylistCard />
+                        {/* END PLAYLISTS GRID */}
                     </div>
                 </div>
             </ScrollArea>
