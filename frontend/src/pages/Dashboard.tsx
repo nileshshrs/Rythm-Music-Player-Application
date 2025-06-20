@@ -7,7 +7,7 @@ import { Link } from "react-router-dom";
 
 const Dashboard: React.FC = () => {
     return (
-        <div className="w-full h-full min-h-screen bg-[#0b0e13] text-[#fefefe] pt-10 px-6 pb-6">
+        <div className="w-full h-full min-h-screen bg-[#0b0e13] text-[#fefefe] pt-10 px-3 pb-6">
             <div className="w-full max-w-[1400px] mx-auto">
                 {/* Header Row */}
                 <div className="flex items-center justify-between mb-8">

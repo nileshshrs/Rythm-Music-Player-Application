@@ -7,10 +7,11 @@
 
 }
 
-html{
+html {
   background: #000;
-  overflow-x: hidden;
 }
+
+
 .vinyl-wrap {
   position: relative;
   width: 56px;

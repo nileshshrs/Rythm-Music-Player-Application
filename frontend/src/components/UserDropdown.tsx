@@ -12,7 +12,7 @@ const UserDropdown = () => {
   const { user, logout } = useAuth();
 
   return (
-    <DropdownMenu>
+    <DropdownMenu modal={false} >
       <DropdownMenuTrigger asChild>
         <Avatar
           className="w-9 h-9 cursor-pointer shadow-[0_0_0_3px_rgba(255,255,255,0.08)] transition-shadow duration-200 hover:shadow-[0_0_0_4px_rgba(255,255,255,0.14)]"

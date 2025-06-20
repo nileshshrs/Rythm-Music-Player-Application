@@ -118,7 +118,7 @@ const Topbar = () => {
                 to="/dashboard"
                 className={cn(
                   buttonVariants({ variant: "ghost" }),
-                  "h-9 px-4 rounded-md bg-zinc-800 text-zinc-200 border border-zinc-700 transition-colors duration-150 hover:bg-zinc-700 hover:text-white"
+                  "h-9 px-4 rounded-md bg-zinc-800 text-zinc-200 border border-zinc-700 transition-colors duration-150 hover:bg-zinc-700 hover:text-white mr-5"
                 )}
               >
                 <LayoutDashboardIcon className="size-4 mr-2" />

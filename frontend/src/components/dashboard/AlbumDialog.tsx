@@ -223,7 +223,7 @@ const AlbumDialog = ({
         ) : null;
 
     return (
-        <Dialog open={open} onOpenChange={onOpenChange}>
+        <Dialog open={open} onOpenChange={onOpenChange} modal={false}>
             <DialogContent className="bg-[#0d0d0d] text-white max-w-md p-0 overflow-hidden">
                 <ScrollArea className="max-h-[80vh]">
                     <form onSubmit={handleSubmit(onSubmit)} className="p-6 space-y-5">
