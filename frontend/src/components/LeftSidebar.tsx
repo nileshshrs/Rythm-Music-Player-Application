@@ -8,19 +8,23 @@ import { Input } from "@/components/ui/input";
 import PlaylistSkeleton from "./skeletons/PlaylistSkeleton";
 import PlaylistImage from "@/components/PlaylistImage";
 import { useCreatePlaylist, useUserPlaylists } from "@/hooks/usePlaylist";
+import { useAuth } from "@/context/AuthContext";
+import Prompt from "@/components/Prompt"; // <-- Add this import
 
 const LeftSidebar = () => {
   const { playlists, isLoading, isError, error } = useUserPlaylists();
   const { mutate: createPlaylist, isPending, isError: isCreateError } = useCreatePlaylist();
+  const { user } = useAuth();
 
   const [search, setSearch] = useState("");
 
   const handleCreate = () => {
-    createPlaylist();
+    if (user) createPlaylist();
+    return;
   };
 
   return (
-    <div className="h-[88vh] flex flex-col gap-2 @container">
+    <div className="h-[88vh] flex flex-col gap-2 @container ">
       {/* Navigation */}
       <div className="rounded-lg bg-zinc-900 px-3 py-4 sm:p-4">
         <nav className="space-y-2">
@@ -75,7 +79,7 @@ const LeftSidebar = () => {
       </div>
 
       {/* Library */}
-      <div className="flex-1 rounded-lg bg-zinc-900 px-3 py-4 sm:p-4">
+      <div className="flex-1 rounded-lg bg-zinc-900 px-0 py-4 sm:p-4">
         <div className="hidden @[130px]:flex items-center justify-between mb-4 px-1 sm:px-2">
           <div className="inline-flex items-center justify-center text-white/90 font-semibold text-sm sm:text-base tracking-tight">
             <Library className="mr-2 w-5 h-5 text-white relative top-[1px]" strokeWidth={3} />
@@ -92,7 +96,7 @@ const LeftSidebar = () => {
               <line x1="12" y1="5" x2="12" y2="19" />
               <line x1="5" y1="12" x2="19" y2="12" />
             </svg>
-            <span className="hidden @[265px]:inline">{isPending ? "Creating..." : "Create"}</span>
+            <span className="hidden @[265px]:inline">Create</span>
           </button>
         </div>
 
@@ -124,9 +128,12 @@ const LeftSidebar = () => {
           </p>
         )}
 
-        <ScrollArea className="h-[calc(70vh-300px)] overflow-y-auto pr-1">
-          <div className="space-y-1.5">
-            {isLoading ? (
+        <ScrollArea className="h-[calc(70vh-150px)] overflow-y-auto">
+          <div className="space-y-1.5 h-full w-full">
+            {!user || (Array.isArray(playlists) && playlists.length === 0) ? (
+
+              <Prompt />
+            ) : isLoading ? (
               <PlaylistSkeleton />
             ) : isError ? (
               <div className="text-sm text-red-400 px-2">
@@ -160,7 +167,7 @@ const LeftSidebar = () => {
           </div>
         </ScrollArea>
       </div>
-    </div >
+    </div>
   );
 };
 

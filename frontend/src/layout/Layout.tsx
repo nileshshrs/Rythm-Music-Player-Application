@@ -8,11 +8,16 @@ import {
   ResizablePanelGroup,
 } from "@/components/ui/resizable";
 import { Outlet } from "react-router-dom";
+import { useAuth } from "@/context/AuthContext";
 
 const Layout = () => {
+  const { user } = useAuth();
   return (
-    <div className="h-screen bg-black text-white flex flex-col pt-2">
-      <ResizablePanelGroup direction="horizontal" className="flex-1 flex h-full overflow-hidden">
+    <div className="h-screen bg-black text-white flex flex-col pt-2 "> {/* <-- set your min-w here */}
+      <ResizablePanelGroup
+        direction="horizontal"
+        className="flex-1 flex h-full overflow-hidden !min-w-[350px] sm:p-0"   // <--- ADD min-w
+      >
         {/* Left Sidebar */}
         <ResizablePanel
           defaultSize={20}
@@ -38,15 +43,17 @@ const Layout = () => {
         <ResizableHandle className="w-2 bg-black rounded-lg transition-colors" />
 
         {/* Right Sidebar */}
-        <ResizablePanel
-          defaultSize={20}
-          minSize={0}
-          maxSize={20}
-          collapsedSize={0}
-          className="hidden md:block w-0 md:w-1/5 lg:w-1/4"
-        >
-          <Activity />
-        </ResizablePanel>
+        {user && (
+          <ResizablePanel
+            defaultSize={20}
+            minSize={0}
+            maxSize={20}
+            collapsedSize={0}
+            className="hidden md:block w-0 md:w-1/5 lg:w-1/4"
+          >
+            <Activity />
+          </ResizablePanel>
+        )}
       </ResizablePanelGroup>
 
       {/* Fixed bottom Player */}
