@@ -1,21 +1,29 @@
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { useUserById } from "@/hooks/useUserByID";
 import Loader from "@/components/Loader";
 import PlaylistCard from "@/components/PlaylistCard";
+import { useAuth } from "@/context/AuthContext";
+import { useEffect } from "react";
 
 const fallbackImg = "/Note.jpg";
 
 const Profile = () => {
     const { id } = useParams<{ id: string }>();
+    const { user: authUser } = useAuth();
     const { data: user, isLoading } = useUserById(id || "");
+    const navigate = useNavigate();
+
+    // Redirect to /account if the profile belongs to the current logged-in user
+    useEffect(() => {
+        if (authUser && id === authUser._id) {
+            navigate("/account", { replace: true });
+        }
+    }, [authUser, id, navigate]);
 
     if (isLoading) {
-        return (
-            <Loader />
-        );
+        return <Loader />;
     }
-
     if (!user) {
         return (
             <div className="h-[80.1vh] flex items-center justify-center bg-gradient-to-b from-zinc-800 to-zinc-900 rounded-md">

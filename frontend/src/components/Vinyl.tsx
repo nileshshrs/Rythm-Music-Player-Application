@@ -16,7 +16,7 @@ const Vinyl: React.FC<VinylProps> = ({ coverImage, isPlaying }) => {
       </div>
       <div
         className="vinyl-cover"
-        style={{ backgroundImage: `url(${coverImage})` }}
+        style={{ backgroundImage: `url(${coverImage})`, backgroundSize: 'cover', aspectRatio: '1 / 1' }}
       >
         <div className="vinyl-cover-label"></div>
       </div>
