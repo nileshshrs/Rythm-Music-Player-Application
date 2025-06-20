@@ -15,32 +15,50 @@ const Topbar = () => {
   const location = useLocation();
   const { user } = useAuth();
 
+  // Focus input when opening mobile search
   useEffect(() => {
     if (showSearch && searchInputRef.current) {
       searchInputRef.current.focus();
     }
   }, [showSearch]);
 
+  // Update input value from URL on location change
   useEffect(() => {
-    const trimmed = query.trim();
-    if (trimmed === "" && location.pathname === "/search") {
+    const urlQuery = new URLSearchParams(location.search).get("q") || "";
+    setQuery(urlQuery);
+  }, [location.search]);
+
+  // Only navigate to /search if not already there (on focus)
+  const handleFocus = () => {
+    if (location.pathname !== "/search") {
+      navigate("/search");
+    }
+  };
+
+  // Update query param only if on /search, and never navigate away from current page if not searching
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const val = e.target.value;
+    setQuery(val);
+    if (location.pathname === "/search") {
+      navigate(`/search?q=${encodeURIComponent(val)}`);
+    }
+  };
+
+  // Close mobile search and reset query if on search page
+  const handleCloseMobileSearch = () => {
+    setShowSearch(false);
+    setQuery("");
+    if (location.pathname === "/search") {
       navigate("/");
     }
-    if (trimmed !== "") {
-      navigate(`/search?q=${encodeURIComponent(trimmed)}`);
-    }
-  }, [query, navigate, location.pathname]);
+  };
 
+  // Hide search bar if navigating away from search
   useEffect(() => {
     if (!location.pathname.startsWith("/search") && showSearch) {
       setShowSearch(false);
     }
   }, [location.pathname]);
-
-  const handleCloseMobileSearch = () => {
-    setShowSearch(false);
-    setQuery("");
-  };
 
   return (
     <div className="
@@ -53,7 +71,8 @@ const Topbar = () => {
         <input
           type="text"
           value={query}
-          onChange={(e) => setQuery(e.target.value)}
+          onFocus={handleFocus}
+          onChange={handleChange}
           placeholder="Search for songs, artists, or albums"
           className="bg-transparent outline-none w-full placeholder:text-zinc-400"
         />
@@ -88,7 +107,8 @@ const Topbar = () => {
               ref={searchInputRef}
               type="text"
               value={query}
-              onChange={(e) => setQuery(e.target.value)}
+              onFocus={handleFocus}
+              onChange={handleChange}
               placeholder="Search"
               className="bg-transparent outline-none w-full placeholder:text-zinc-400 text-xs"
               style={{ minWidth: 0 }}
