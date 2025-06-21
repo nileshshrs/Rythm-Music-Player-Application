@@ -7,12 +7,21 @@ import { useSongs } from "@/hooks/useSongs";
 import BrowseCards from "@/components/BrowseCards";
 import { useAuth } from "@/context/AuthContext";
 
+function getGreeting() {
+  const hour = new Date().getHours();
+  if (hour < 12) return "Good Morning";
+  if (hour < 18) return "Good Afternoon";
+  return "Good Evening";
+}
+
 const Home = () => {
   const { songs, isLoading } = useSongs();
   const [onboardingOpen, setOnboardingOpen] = useState(false);
   const { user } = useAuth();
 
   const openOnboarding = () => setOnboardingOpen(true);
+  const greeting = getGreeting();
+
 
   return (
     <div className="h-[80vh] bg-gradient-to-b from-zinc-800 to-zinc-900 rounded-md overflow-hidden text-white">
@@ -20,7 +29,7 @@ const Home = () => {
         <div className="p-4 sm:p-6 pb-40">
           {!user && <BrowseCards />}
           <h2 className="text-2xl sm:text-3xl font-bold mb-6">
-            Good Afternoon{user ? ` ,${user.username}!` : "!"}
+            {greeting} <span className="uppercase">{user ? ` , ${user.username}!` : "!"}</span>
           </h2>
           <Featured openOnboarding={openOnboarding} />
           <div className="space-y-8 mt-8">

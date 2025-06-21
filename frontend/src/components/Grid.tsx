@@ -35,27 +35,36 @@ const Grid: React.FC<GridProps> = ({ title, songs, isLoading, openOnboarding }) 
     playSingle(song);
   };
 
+  // Shuffle ONCE per component mount or if 'songs' changes
   const shuffledSongs = useMemo(() => {
     if (!songs) return [];
     return shuffle(songs);
   }, [songs]);
 
-  const visibleSongs = showAll
-    ? shuffledSongs.slice(0, 10)
-    : shuffledSongs.slice(0, 5);
+  let visibleSongs: Song[] = [];
+  if (isAuthenticated) {
+    visibleSongs = showAll
+      ? shuffledSongs.slice(0, 10)
+      : shuffledSongs.slice(0, 5);
+  } else {
+    visibleSongs = shuffledSongs.slice(0, 6);
+  }
 
   return (
     <div className="mb-8">
       {/* Section Title + Button */}
       <div className="flex items-center justify-between mb-4">
         <h2 className="text-xl sm:text-2xl font-bold text-white">{title}</h2>
-        <Button
-          variant="link"
-          className="text-sm text-zinc-400 hover:text-white"
-          onClick={() => setShowAll(!showAll)}
-        >
-          {showAll ? "Show less" : "Show all"}
-        </Button>
+        {/* Only show button if authenticated */}
+        {isAuthenticated && (
+          <Button
+            variant="link"
+            className="text-sm text-zinc-400 hover:text-white"
+            onClick={() => setShowAll(!showAll)}
+          >
+            {showAll ? "Show less" : "Show all"}
+          </Button>
+        )}
       </div>
 
       {/* Grid */}
