@@ -11,36 +11,44 @@ const Topbar = () => {
   const [query, setQuery] = useState("");
   const [showSearch, setShowSearch] = useState(false);
   const searchInputRef = useRef<HTMLInputElement>(null);
+  const prevPathRef = useRef<string | null>(null);
   const navigate = useNavigate();
   const location = useLocation();
   const { user } = useAuth();
 
-  // Focus input when opening mobile search
+  // Always remember previous path unless it's /search
   useEffect(() => {
-    if (showSearch && searchInputRef.current) {
-      searchInputRef.current.focus();
+    if (location.pathname !== "/search") {
+      prevPathRef.current = location.pathname + location.search;
     }
-  }, [showSearch]);
+  }, [location.pathname, location.search]);
 
-  // Update input value from URL on location change
+  // Keep query in sync with URL
   useEffect(() => {
     const urlQuery = new URLSearchParams(location.search).get("q") || "";
     setQuery(urlQuery);
   }, [location.search]);
 
-  // Only navigate to /search if not already there (on focus)
-  const handleFocus = () => {
-    if (location.pathname !== "/search") {
-      navigate("/search");
-    }
-  };
+  // Do NOT navigate on focus, only for styling
+  const handleFocus = () => {};
 
-  // Update query param only if on /search, and never navigate away from current page if not searching
+  // Only navigate to /search if the user actually types something
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const val = e.target.value;
     setQuery(val);
-    if (location.pathname === "/search") {
-      navigate(`/search?q=${encodeURIComponent(val)}`);
+
+    if (val.trim() !== "") {
+      // Only navigate if not already on /search, else just update q param
+      if (location.pathname !== "/search") {
+        navigate(`/search?q=${encodeURIComponent(val)}`);
+      } else {
+        navigate(`/search?q=${encodeURIComponent(val)}`);
+      }
+    } else {
+      // If input cleared while on /search, go back to previous page
+      if (location.pathname === "/search") {
+        navigate(prevPathRef.current || "/");
+      }
     }
   };
 
@@ -49,20 +57,20 @@ const Topbar = () => {
     setShowSearch(false);
     setQuery("");
     if (location.pathname === "/search") {
-      navigate("/");
+      navigate(prevPathRef.current || "/");
     }
   };
 
-  // Hide search bar if navigating away from search
+  // Hide mobile search bar if not on search
   useEffect(() => {
     if (!location.pathname.startsWith("/search") && showSearch) {
       setShowSearch(false);
     }
-  }, [location.pathname]);
+  }, [location.pathname, showSearch]);
 
   return (
     <div className="
-      rounded-md mb-2 h-16 w-full flex items-center justify-between px-2 md:px-6 sticky top-0 z-10 bg-zinc-900/80 backdrop-blur-md
+      rounded-md mb-2 h-16 w-full flex items-center justify-between px-2 md:px-6 top-0 z-10 bg-zinc-900/80 backdrop-blur-md
       relative
     ">
       {/* Desktop: Search Input */}
