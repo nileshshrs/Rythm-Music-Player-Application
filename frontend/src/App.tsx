@@ -16,41 +16,36 @@ import Messages from "./components/chat/Messages";
 import Account from "./pages/Account";
 import Profile from "./pages/Profile";
 
+// --- Guards ---
 const SignInRouteGuard = () => {
   const { user } = useAuth();
-  if (user) {
-    return <Navigate to="/" replace />;
-  }
+  if (user) return <Navigate to="/" replace />;
   return <Login />;
 };
-
 const DashboardRouteGuard = () => {
   const { user } = useAuth();
-  if (!user || user.role !== "admin") {
-    return <Navigate to="/" replace />;
-  }
+  if (!user || user.role !== "admin") return <Navigate to="/" replace />;
   return <Dashboard />;
 };
-
 const SignUpRouteGuard = () => {
   const { user } = useAuth();
-  if (user) {
-    return <Navigate to="/" replace />;
-  }
+  if (user) return <Navigate to="/" replace />;
   return <Register />;
 };
-
 const ChatRouteGuard = () => {
   const { user } = useAuth();
-  if (!user) {
-    return <Navigate to="/sign-in" replace />;
-  }
+  if (!user) return <Navigate to="/sign-in" replace />;
   return <Chat />;
+};
+// --- Generic user-protected route guard ---
+const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
+  const { user } = useAuth();
+  if (!user) return <Navigate to="/sign-in" replace />;
+  return <>{children}</>;
 };
 
 function App() {
   const navigate = useNavigate();
-
   useEffect(() => {
     setNavigate(navigate);
   }, [navigate]);
@@ -70,8 +65,17 @@ function App() {
         <Route path="/songs/:id" element={<Songs />} />
         <Route path="/playlist/:id" element={<Playlist />} />
         <Route path="/search" element={<Search />} />
-        <Route path="/account" element={<Account />} />
-        <Route path="/profile/:id" element={<Profile />} />
+        {/* --- Account & Profile routes protected --- */}
+        <Route path="/account" element={
+          <ProtectedRoute>
+            <Account />
+          </ProtectedRoute>
+        } />
+        <Route path="/profile/:id" element={
+          <ProtectedRoute>
+            <Profile />
+          </ProtectedRoute>
+        } />
       </Route>
     </Routes>
   );

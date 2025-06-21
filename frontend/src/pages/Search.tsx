@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { useLocation } from "react-router-dom";
+import { useLocation, Link } from "react-router-dom";
 import { useAlbums } from "@/hooks/useAlbums";
 import { useSongs } from "@/hooks/useSongs";
 import { formatDuration } from "@/utils/formatDuration";
@@ -12,12 +12,12 @@ import Onboarding from "@/components/Onboarding";
 const Search = () => {
   const { isAuthenticated } = useAuth()
   const [onboardingOpen, setOnboardingOpen] = useState(false);
-  const { playSingle } = useMusicContext(); // Get the playSingle function
+  const { playSingle } = useMusicContext();
 
   const openOnboarding = () => setOnboardingOpen(true);
   const handlePlay = (song: Song) => {
     if (!isAuthenticated) {
-      openOnboarding(); // <--- just call the prop
+      openOnboarding();
       return;
     }
     playSingle(song);
@@ -91,7 +91,13 @@ const Search = () => {
                       </button>
                     </div>
                     <div className="flex flex-col flex-1 min-w-0">
-                      <div className="text-white font-medium truncate">{song.title}</div>
+                      <Link
+                        to={`/songs/${song._id}`}
+                        className="text-white font-medium truncate hover:underline focus:underline"
+                        tabIndex={0}
+                      >
+                        {song.title}
+                      </Link>
                       <div className="text-sm text-zinc-400 truncate">{song.artist}</div>
                     </div>
                     <div className="text-sm text-zinc-400">{formatDuration(song.duration)}</div>
@@ -116,9 +122,10 @@ const Search = () => {
 
               <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-6">
                 {visibleAlbums.map((album) => (
-                  <div
+                  <Link
+                    to={`/album/${album._id}`}
                     key={album._id}
-                    className="bg-[#1c1c1e] hover:bg-[#18181b] rounded-lg p-4 cursor-pointer group relative"
+                    className="bg-[#1c1c1e] hover:bg-[#18181b] rounded-lg p-4 cursor-pointer group relative block"
                   >
                     <div className="relative">
                       <img
@@ -126,11 +133,10 @@ const Search = () => {
                         alt={album.title}
                         className="w-full aspect-square object-cover rounded-md mb-4"
                       />
-
                     </div>
                     <h3 className="text-white font-semibold text-sm truncate">{album.title}</h3>
                     <p className="text-zinc-400 text-xs truncate">{album.artist}</p>
-                  </div>
+                  </Link>
                 ))}
               </div>
             </div>
