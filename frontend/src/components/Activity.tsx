@@ -13,7 +13,7 @@ import {
     DropdownMenuItem,
 } from "@/components/ui/dropdown-menu";
 import { Link, useNavigate } from "react-router-dom";
-import { MouseEvent, useState } from "react";
+import { useState, MouseEvent } from "react";
 import { useCreateConversation } from "@/hooks/useConversation";
 
 // Import the hook
@@ -38,8 +38,8 @@ const Activity = () => {
         },
     });
 
-    const handleContextMenu = (e: MouseEvent<HTMLDivElement>, userId: string) => {
-        e.preventDefault();
+    // LEFT CLICK HANDLER
+    const handleDropdownOpen = (userId: string) => {
         setOpenDropdownId(userId);
     };
 
@@ -76,6 +76,7 @@ const Activity = () => {
 
                                 return (
                                     <DropdownMenu
+
                                         key={user._id}
                                         open={openDropdownId === user._id}
                                         onOpenChange={(open) => {
@@ -84,7 +85,8 @@ const Activity = () => {
                                     >
                                         <DropdownMenuTrigger asChild>
                                             <div
-                                                onContextMenu={(e) => handleContextMenu(e, user._id)}
+                                                // CHANGE: Open on left click instead of right click
+                                                onClick={() => handleDropdownOpen(user._id)}
                                                 className="flex items-center gap-3 p-3 rounded-lg transition-colors cursor-pointer hover:bg-zinc-800"
                                             >
                                                 <div className="relative">
@@ -114,7 +116,9 @@ const Activity = () => {
 
                                         <DropdownMenuContent
                                             align="end"
-                                            sideOffset={-50}
+                                            side="bottom"
+                                            sideOffset={-32}
+                                            alignOffset={0}
                                             className="w-[220px] mt-2 bg-[#18181b] text-sm text-[#fefefe] font-semibold rounded-md p-0 border border-white/10 shadow-[0_2px_8px_rgba(255,255,255,0.03)]"
                                         >
                                             <DropdownMenuItem className="px-3 py-2 hover:bg-zinc-800 focus:bg-zinc-800 transition-colors hover:!text-white" asChild>
