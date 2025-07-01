@@ -81,6 +81,16 @@ export default function Login() {
               className="w-full rounded-md border-none bg-[#18181b] text-white/80 placeholder-zinc-400 py-3 px-4 text-base focus:outline-none"
               style={{ boxShadow: "none" }}
             />
+            {/* Forgot password link */}
+            <div className="text-right mt-1">
+              <a
+                href="/forgot-password"
+                className="text-sm text-zinc-400 hover:text-white underline"
+                tabIndex={0}
+              >
+                Forgot password?
+              </a>
+            </div>
           </div>
 
           <Button

@@ -1,6 +1,4 @@
 import React from "react";
-
-
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Button } from "@/components/ui/button";
 import {
@@ -14,25 +12,55 @@ import { formatDuration } from "@/utils/formatDuration";
 import { useSongByID } from "@/hooks/useSongs";
 import Loader from "@/components/Loader";
 import { useAddSongToPlaylist, useUserPlaylists } from "@/hooks/usePlaylist";
-import { useMusicContext } from "@/context/MusicContext"; // Add this line
+import { useMusicContext } from "@/context/MusicContext";
 import { useAuth } from "@/context/AuthContext";
 import { useState } from "react";
 import { Song } from "@/utils/types";
 import Onboarding from "@/components/Onboarding";
+import { toast } from "sonner"; // <-- add this import
+import { Toaster } from "@/components/ui/sonner"; // <-- add this import
+
+const greenToastStyle = {
+  background: "linear-gradient(90deg, #1db954 0%, #12953b 100%)",
+  color: "#fff",
+  boxShadow: "0 8px 32px 0 rgba(0,0,0,0.40)",
+  border: "1.5px solid #12813b",
+  fontWeight: "bold",
+  fontFamily: "'Inter', 'Roboto', Arial, sans-serif",
+  letterSpacing: "0.01em",
+  minWidth: "320px",
+  maxWidth: "90vw",
+};
 
 const Songs = () => {
   const { id } = useParams<{ id: string }>();
   const { song, isLoading, isError } = useSongByID(id || "");
   const { playlists } = useUserPlaylists();
-  const addSongToPlaylistMutation = useAddSongToPlaylist();
-  const { isAuthenticated } = useAuth()
+  const { isAuthenticated } = useAuth();
   const [onboardingOpen, setOnboardingOpen] = useState(false);
-  const { playSingle } = useMusicContext(); // Get the playSingle function
+  const { playSingle } = useMusicContext();
+
+  // --- Success Toast: Playlist Add ---
+  const addSongToPlaylistMutation = useAddSongToPlaylist({
+    onSuccess: (data: any, variables: any) => {
+      toast.success("Song added to playlist!", {
+        style: greenToastStyle,
+        descriptionClassName: "text-white/90",
+        duration: 2500,
+      });
+    },
+    onError: (error: any) => {
+      toast.error("Failed to add song to playlist.", {
+        style: { background: "#f55b5b", color: "#fff", minWidth: "320px", maxWidth: "90vw", fontWeight: 500 },
+        duration: 2500,
+      });
+    },
+  });
 
   const openOnboarding = () => setOnboardingOpen(true);
   const handlePlay = (song: Song) => {
     if (!isAuthenticated) {
-      openOnboarding(); // <--- just call the prop
+      openOnboarding();
       return;
     }
     playSingle(song);
@@ -89,7 +117,7 @@ const Songs = () => {
             <div className="px-6 pb-4 flex gap-4 items-center justify-center md:justify-start">
               <Button
                 className="w-14 h-14 rounded-full bg-green-500 hover:bg-green-400 transition duration-200 transform hover:scale-105 flex items-center justify-center p-0"
-                onClick={() => handlePlay(song)} // <<-- Add this
+                onClick={() => handlePlay(song)}
               >
                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="#111827" className="w-8 h-8">
                   <path d="M5 3v18l15-9L5 3z" />
@@ -180,6 +208,7 @@ const Songs = () => {
         </div>
       </ScrollArea>
       <Onboarding open={onboardingOpen} onOpenChange={setOnboardingOpen} />
+      <Toaster duration={2500} position="top-right" />
     </div>
   );
 };

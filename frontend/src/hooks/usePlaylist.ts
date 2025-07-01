@@ -1,7 +1,7 @@
 import { addSongToPlaylist, createEmptyPlaylist, createPlaylistFromAlbum, deletePlaylist, getPlayistsByUser, getPlaylistById, getPlaylistsByUserId, updatePlaylist } from "@/api/api";
 import { useAuth } from "@/context/AuthContext";
 import { queryClient } from "@/main";
-import { useMutation, useQuery } from "@tanstack/react-query";
+import { useMutation, UseMutationOptions, useQuery } from "@tanstack/react-query";
 import { useNavigate } from "react-router-dom";
 
 export const useUserPlaylists = () => {
@@ -108,19 +108,28 @@ export const useUpdatePlaylist = () => {
 };
 
 
-export const useAddSongToPlaylist = () => useMutation({
-    mutationFn: ({
-        playlistId,
-        songId,
-    }: {
-        playlistId: string;
-        songId: string;
-    }) => addSongToPlaylist(playlistId, songId),
-    onSuccess: (_data, variables) => {
-        queryClient.invalidateQueries({ queryKey: ["userplaylists"] });
-        queryClient.invalidateQueries({ queryKey: ["playlist", variables.playlistId] });
-    },
-});
+export const useAddSongToPlaylist = (
+    options?: UseMutationOptions<any, unknown, { playlistId: string; songId: string }>
+) =>
+    useMutation({
+        mutationFn: ({
+            playlistId,
+            songId,
+        }: {
+            playlistId: string;
+            songId: string;
+        }) => addSongToPlaylist(playlistId, songId),
+        onSuccess: (_data, variables, context) => {
+            queryClient.invalidateQueries({ queryKey: ["userplaylists"] });
+            queryClient.invalidateQueries({ queryKey: ["playlist", variables.playlistId] });
+            // Call user-supplied onSuccess if present
+            options?.onSuccess?.(_data, variables, context);
+        },
+        onError: (error, variables, context) => {
+            options?.onError?.(error, variables, context);
+        },
+        ...options,
+    });
 
 export const usePlaylistsByUserId = (id?: string) => {
      const { user } = useAuth()

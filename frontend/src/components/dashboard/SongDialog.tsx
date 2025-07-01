@@ -26,6 +26,20 @@ import {
     SelectContent,
     SelectItem,
 } from "@/components/ui/select";
+import { toast } from "sonner";
+import { Toaster } from "../ui/sonner";
+
+const greenToastStyle = {
+    background: "linear-gradient(90deg, #1db954 0%, #12953b 100%)",
+    color: "#fff",
+    boxShadow: "0 8px 32px 0 rgba(0,0,0,0.40)",
+    border: "1.5px solid #12813b",
+    fontWeight: "bold",
+    fontFamily: "'Inter', 'Roboto', Arial, sans-serif",
+    letterSpacing: "0.01em",
+    minWidth: "320px",
+    maxWidth: "90vw",
+};
 
 const getSongSchema = (isEditing: boolean) =>
     z.object({
@@ -214,9 +228,8 @@ const SongDialog = ({ open, onOpenChange, defaultValues = {} }: SongDialogProps)
     };
 
     const createSongMutation = useCreateSong();
-    const editSongMutation = useEditSong(); // ADDED
+    const editSongMutation = useEditSong();
 
-    // REPLACED onSubmit with edit support
     const onSubmit = (data: SongFormValues) => {
         const album = data.album === "no-album" ? null : data.album!;
         const songData: Song = {
@@ -233,6 +246,11 @@ const SongDialog = ({ open, onOpenChange, defaultValues = {} }: SongDialogProps)
                 },
                 {
                     onSuccess: () => {
+                        toast.success("Song edited successfully.!", {
+                            style: greenToastStyle,
+                            descriptionClassName: "text-white/90",
+                            duration: 2500,
+                        });
                         refetch();
                         onOpenChange(false);
                     },
@@ -241,6 +259,11 @@ const SongDialog = ({ open, onOpenChange, defaultValues = {} }: SongDialogProps)
         } else {
             createSongMutation.mutate(songData, {
                 onSuccess: () => {
+                    toast.success("Song created successfully!", {
+                        style: greenToastStyle,
+                        descriptionClassName: "text-white/90",
+                        duration: 2500,
+                    });
                     refetch();
                     onOpenChange(false);
                 },
@@ -270,6 +293,7 @@ const SongDialog = ({ open, onOpenChange, defaultValues = {} }: SongDialogProps)
 
     return (
         <Dialog open={open} onOpenChange={onOpenChange} modal={false}>
+            <Toaster position="top-right" richColors />
             <DialogContent className="bg-[#0d0d0d] text-white max-w-md p-0 overflow-hidden">
                 <ScrollArea className="max-h-[80vh]">
                     <form onSubmit={handleSubmit(onSubmit)} className="p-6 space-y-5">
@@ -283,7 +307,6 @@ const SongDialog = ({ open, onOpenChange, defaultValues = {} }: SongDialogProps)
                                     : "Add a new song to your music library"}
                             </DialogDescription>
                         </DialogHeader>
-
                         {/* Song Image Upload */}
                         <div
                             className="border border-dashed border-zinc-700 rounded-md py-6 px-4 flex flex-col items-center justify-center gap-2 text-sm text-zinc-400 cursor-pointer hover:border-zinc-500 relative"
@@ -319,7 +342,6 @@ const SongDialog = ({ open, onOpenChange, defaultValues = {} }: SongDialogProps)
                                 <p className="text-xs text-zinc-400">Uploading image...</p>
                             )}
                         </div>
-
                         {/* Artist Image Upload */}
                         <div
                             className="border border-dashed border-zinc-700 rounded-md py-6 px-4 flex flex-col items-center justify-center gap-2 text-sm text-zinc-400 cursor-pointer hover:border-zinc-500 relative"
@@ -355,7 +377,6 @@ const SongDialog = ({ open, onOpenChange, defaultValues = {} }: SongDialogProps)
                                 <p className="text-xs text-zinc-400">Uploading image...</p>
                             )}
                         </div>
-
                         {/* Audio File */}
                         <div className="space-y-2">
                             <div className="flex items-center justify-between">
@@ -374,7 +395,6 @@ const SongDialog = ({ open, onOpenChange, defaultValues = {} }: SongDialogProps)
                             )}
                             {renderError(errors.audioUrl)}
                         </div>
-
                         {/* Title */}
                         <div className="space-y-2">
                             <div className="flex items-center justify-between">
@@ -384,7 +404,6 @@ const SongDialog = ({ open, onOpenChange, defaultValues = {} }: SongDialogProps)
                             <Input {...register("title")} className={inputClass} />
                             {renderError(errors.title)}
                         </div>
-
                         {/* Artist */}
                         <div className="space-y-2">
                             <div className="flex items-center justify-between">
@@ -394,7 +413,6 @@ const SongDialog = ({ open, onOpenChange, defaultValues = {} }: SongDialogProps)
                             <Input {...register("artist")} className={inputClass} />
                             {renderError(errors.artist)}
                         </div>
-
                         {/* Duration */}
                         <div className="space-y-2">
                             <div className="flex items-center justify-between">
@@ -408,7 +426,6 @@ const SongDialog = ({ open, onOpenChange, defaultValues = {} }: SongDialogProps)
                             />
                             {renderError(errors.duration)}
                         </div>
-
                         {/* Album */}
                         <div className="space-y-2">
                             <div className="flex items-center justify-between">

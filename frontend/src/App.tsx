@@ -15,6 +15,8 @@ import { useAuth } from "./context/AuthContext";
 import Messages from "./components/chat/Messages";
 import Account from "./pages/Account";
 import Profile from "./pages/Profile";
+import ForgotPassword from "./pages/ForgotPassword";
+import ResetPassword from "./pages/ResetPassword";
 
 // --- Guards ---
 const SignInRouteGuard = () => {
@@ -55,6 +57,9 @@ function App() {
       <Route element={<DashboardRouteGuard />} path="/dashboard" />
       <Route element={<SignInRouteGuard />} path="/sign-in" />
       <Route element={<SignUpRouteGuard />} path="/sign-up" />
+      <Route element={<ForgotPassword />} path="/forgot-password" />
+      <Route path="/password/reset" element={<ResetPassword />} />
+
 
       <Route element={<Layout />}>
         <Route path="/" element={<Home />} />

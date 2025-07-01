@@ -24,7 +24,7 @@ const Home = () => {
 
 
   return (
-    <div className="h-[80vh] bg-gradient-to-b from-zinc-800 to-zinc-900 rounded-md overflow-hidden text-white">
+    <div className="h-[80.3vh] bg-gradient-to-b from-zinc-800 to-zinc-900 rounded-md overflow-hidden text-white">
       <ScrollArea className="h-full custom-scroll">
         <div className="p-4 sm:p-6 pb-40">
           {!user && <BrowseCards />}

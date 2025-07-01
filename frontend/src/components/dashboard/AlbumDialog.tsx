@@ -19,6 +19,19 @@ import { useAlbums, useCreateAlbum, useEditAlbum } from "@/hooks/useAlbums";
 import { Calendar } from "@/components/ui/calendar";
 import { format } from "date-fns";
 import { Popover, PopoverTrigger, PopoverContent } from "@/components/ui/popover";
+import { toast } from "sonner"; // <-- ✅ Added toast import
+import { Toaster } from "../ui/sonner";
+const greenToastStyle = {
+    background: "linear-gradient(90deg, #1db954 0%, #12953b 100%)",
+    color: "#fff",
+    boxShadow: "0 8px 32px 0 rgba(0,0,0,0.40)",
+    border: "1.5px solid #12813b",
+    fontWeight: "bold",
+    fontFamily: "'Inter', 'Roboto', Arial, sans-serif",
+    letterSpacing: "0.01em",
+    minWidth: "320px",
+    maxWidth: "90vw",
+};
 
 const albumSchema = z.object({
     title: z.string().min(1, "Title is required"),
@@ -57,7 +70,11 @@ const AlbumDialog = ({
 
     const createAlbumMutation = useCreateAlbum({
         onSuccess: (res) => {
-            console.log("Album created successfully:", res);
+            toast.success("Album created successfully.!", {
+                style: greenToastStyle,
+                descriptionClassName: "text-white/90",
+                duration: 2500,
+            });
             refetch()
             onOpenChange(false);
         },
@@ -198,7 +215,11 @@ const AlbumDialog = ({
                 { id: defaultValues._id, data: payload },
                 {
                     onSuccess: (res) => {
-                        console.log("Album edited successfully:", res);
+                        toast.success("Album edited successfully.!", {
+                            style: greenToastStyle,
+                            descriptionClassName: "text-white/90",
+                            duration: 2500,
+                        });
                         refetch()
                         onOpenChange(false);
 
@@ -224,6 +245,7 @@ const AlbumDialog = ({
 
     return (
         <Dialog open={open} onOpenChange={onOpenChange} modal={false}>
+            <Toaster position="top-right" richColors /> {/* ADD THIS LINE HERE */}
             <DialogContent className="bg-[#0d0d0d] text-white max-w-md p-0 overflow-hidden">
                 <ScrollArea className="max-h-[80vh]">
                     <form onSubmit={handleSubmit(onSubmit)} className="p-6 space-y-5">
