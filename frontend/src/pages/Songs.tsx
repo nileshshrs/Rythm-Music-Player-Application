@@ -75,7 +75,7 @@ const Songs = () => {
   }
 
   return (
-    <div className="h-[80.1vh] overflow-hidden bg-gradient-to-b from-zinc-800 to-zinc-900 rounded-md">
+    <div className="h-[80.3vh] overflow-hidden bg-gradient-to-b from-zinc-800 to-zinc-900 rounded-md">
       <ScrollArea className="h-full overflow-y-auto rounded-md">
         <div className="relative min-h-full pb-40">
           <div

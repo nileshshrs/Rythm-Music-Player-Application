@@ -73,7 +73,7 @@ const Chat = () => {
   const isMessageRoute = location.pathname === "/messages" || location.pathname === "/messages/";
 
   return (
-    <main className="h-[80vh] rounded-lg bg-gradient-to-b from-zinc-800 to-zinc-900 overflow-hidden">
+    <main className="h-[80.3vh] rounded-lg bg-gradient-to-b from-zinc-800 to-zinc-900 overflow-hidden">
       <div className="grid lg:grid-cols-[300px_1fr] grid-cols-[80px_1fr] h-[calc(100vh-180px)]">
         {/* Sidebar */}
         <div className="border-r border-zinc-800">
